@@ -1,4 +1,4 @@
-ARG NODE_VERSION=21-alpine
+ARG NODE_VERSION=18
 FROM node:${NODE_VERSION}
 
 # Add Tini
