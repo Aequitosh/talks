@@ -1,19 +1,23 @@
-import { Layout, Txt } from "@motion-canvas/2d";
+import { Img, Layout, Txt } from "@motion-canvas/2d";
 import { makeScene2D } from "@motion-canvas/2d/lib/scenes";
 import {
   beginSlide,
   createRef,
   createRefArray,
+  DEFAULT,
+  Direction,
   easeOutQuad,
   range,
+  slideTransition,
 } from "@motion-canvas/core";
 import { all, chain } from "@motion-canvas/core/lib/flow";
 import { DEFAULT_COLOR_BACKGROUND } from "./defaults";
+import repoQRCode from '../assets/repo_qr_code.png';
 
-export default makeScene2D(function* (view) {
+export default makeScene2D(function*(view) {
   view.fill(DEFAULT_COLOR_BACKGROUND);
 
-  yield* beginSlide("intro");
+  yield* beginSlide("closing_thoughts");
 
   let titleLayout = createRef<Layout>();
   const titleRows = createRefArray<Txt>();
@@ -66,7 +70,8 @@ export default makeScene2D(function* (view) {
     </Layout>,
   );
 
-  const titleRowsTo = ["Patterns & Principles", "in Async Rust"];
+
+  const titleRowsTo = ["Thank you", "for your attention"];
   const middleRowFieldsTo = ["Max R. Carrara", "Proxmox"];
   const lastRowTo = "@aequitosh";
 
@@ -86,8 +91,6 @@ export default makeScene2D(function* (view) {
     usernameRow[0].text("_".repeat(lastRowTo.length), 1.25),
   );
 
-  yield* beginSlide("introduce_yourself");
-
   yield* chain(
     ...range(middleRowFieldsTo.length).map((i) =>
       middleRowFields[i].text(middleRowFieldsTo[i], 1 + i * 0.5),
@@ -95,17 +98,27 @@ export default makeScene2D(function* (view) {
     usernameRow[0].text(lastRowTo, 1.75),
   );
 
-  yield* beginSlide("expectations");
-
-  yield* all(
-    titleRows[0].text("What to expect", 1),
-    titleRows[1].text("from this talk", 2),
-    ...middleRowFields.map((t) => t.text("", 1.5)),
-    ...usernameRow.map((t) => t.text("", 1.5)),
+  yield* beginSlide("end");
+  yield* chain(
+    ...titleRows.reverse().map((row, i) => row.text("", 1.5 + i, easeOutQuad)),
+    ...middleRowFields.map((row) => row.text("", 1.5, easeOutQuad)),
+    usernameRow().text("Made with Motion Canvas.\n", 1.5),
   );
 
-  yield* beginSlide("next_scene");
+  const qr = createRef<Img>();
+
+  titleLayout().add(
+    <Img
+      ref={qr}
+      src={repoQRCode}
+      size={0}
+      alignSelf={"center"}
+      opacity={0}
+    />
+  );
+
   yield* all(
-    ...titleRows.reverse().map((row, i) => row.text("", 1.5 + i, easeOutQuad)),
+    qr().size(500, 2),
+    qr().opacity(1, 1.5)
   );
 });

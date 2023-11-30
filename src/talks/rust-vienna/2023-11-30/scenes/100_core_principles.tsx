@@ -160,7 +160,7 @@ pub enum Poll<T> {
     type Output;
     fn poll(${insert(`self: Pin<`)}&mut ${edit(`s`, `S`)}elf${insert(
       `>`,
-    )}, wake: fn()) -> Poll<Self::Output>;${insert(`    `)}
+    )}, wake: fn()) -> Poll<Self::Output>;${insert(`      `)}
 }
 
 pub enum Poll<T> {
@@ -178,7 +178,7 @@ pub struct Pin<P> { /* private fields */ }`)}`,
     fn poll(self: Pin<&mut Self>, ${edit(
       `wake: fn()`,
       `cx: &mut Context<'_>`,
-    )}) -> Poll<Self::Output>;    
+    )}) -> Poll<Self::Output>;      
 }
 
 pub enum Poll<T> {
@@ -196,7 +196,7 @@ pub struct Context<'a> { /* private fields */ }`)}`,
   yield* beginSlide("futures_context");
   yield* codeExample().edit(1, false)`pub trait Future {
     type Output;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;    
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;      
 }
 
 pub enum Poll<T> {
@@ -208,13 +208,13 @@ pub enum Poll<T> {
 pub struct Pin<P> { /* private fields */ }
 
 pub struct Context<'a> { /* private fields */ }${insert(
-    `  // only used to wake executor atm`,
+    `  // only used to notify executor atm`,
   )}`;
 
   yield* beginSlide("futures_pin");
   yield* codeExample().edit(1, false)`pub trait Future {
     type Output;
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;    
+    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output>;      
 }
 
 pub enum Poll<T> {
@@ -225,7 +225,7 @@ pub enum Poll<T> {
 #[repr(transparent)]
 pub struct Pin<P> { /* private fields */ }${insert(`  // ¯\\_(ツ )_/¯`)}
 
-pub struct Context<'a> { /* private fields */ }  // only used to wake executor atm`;
+pub struct Context<'a> { /* private fields */ }  // only used to notify executor atm`;
 
   yield* beginSlide("async_await");
 

@@ -69,10 +69,29 @@ Transfer/sec:     45.90MB
 ```
 
 
-### `examples/good_server_blocking.rs`
+### `examples/good_server_mk2.rs`
 
 ```bash
-$ cargo run --release --example good_server_blocking
+$ cargo run --release --example good_server_mk2
+```
+
+```bash
+$ wrk -t $(( $(nproc) / 2 )) -d 60s -c 1000 http://127.0.0.1:8080
+Running 1m test @ http://127.0.0.1:8080/
+  8 threads and 1000 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.45ms    1.41ms  33.80ms   91.17%
+    Req/Sec    89.61k     8.58k  114.63k    67.93%
+  42800552 requests in 1.00m, 3.55GB read
+Requests/sec: 712323.96
+Transfer/sec:     60.46MB
+```
+
+
+### `examples/good_server_mk3.rs`
+
+```bash
+$ cargo run --release --example good_server_mk3
 ```
 
 ```bash
@@ -80,30 +99,10 @@ $ wrk -t $(( $(nproc) / 2 )) -d 60s -c 1000 http://127.0.0.1:8080/
 Running 1m test @ http://127.0.0.1:8080/
   8 threads and 1000 connections
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.21s   495.06ms   2.00s    63.64%
-    Req/Sec     4.09      5.39   141.00     96.41%
-  1919 requests in 1.00m, 166.79KB read
-  Socket errors: connect 0, read 0, write 0, timeout 1831
-Requests/sec:     31.93
-Transfer/sec:      2.78KB
-```
-
-
-### `examples/good_server_blocking_task.rs`
-
-```bash
-$ cargo run --release --example good_server_blocking_task
-```
-
-```bash
-$ wrk -t $(( $(nproc) / 2 )) -d 60s -c 1000 http://127.0.0.1:8080/
-Running 1m test @ http://127.0.0.1:8080/
-  8 threads and 1000 connections
-  Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency   972.77ms  109.85ms   1.02s    94.52%
-    Req/Sec   210.59    225.79     1.03k    80.12%
-  61440 requests in 1.00m, 5.21MB read
-Requests/sec:   1022.62
-Transfer/sec:     88.88KB
+    Latency     1.44ms    1.43ms  33.59ms   91.36%
+    Req/Sec    90.29k     9.36k  124.71k    68.42%
+  43118137 requests in 1.00m, 3.57GB read
+Requests/sec: 717609.84
+Transfer/sec:     60.91MB
 ```
 
