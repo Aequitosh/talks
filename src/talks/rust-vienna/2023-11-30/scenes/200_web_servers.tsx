@@ -1,5 +1,11 @@
 import { makeScene2D } from "@motion-canvas/2d/lib/scenes";
-import { all, DEFAULT, Direction, slideTransition } from "@motion-canvas/core";
+import {
+  all,
+  createRefArray,
+  DEFAULT,
+  Direction,
+  slideTransition,
+} from "@motion-canvas/core";
 import { beginSlide, createRef } from "@motion-canvas/core/lib/utils";
 import {
   CodeBlock,
@@ -9,30 +15,53 @@ import {
   remove,
 } from "@motion-canvas/2d/lib/components/CodeBlock";
 
+import { Layout, Txt } from "@motion-canvas/2d";
+
 import { DEFAULT_COLOR_BACKGROUND } from "./defaults";
-import { Layout } from "@motion-canvas/2d";
+import { zip } from "../util/functions";
 
 export default makeScene2D(function* (view) {
   view.fill(DEFAULT_COLOR_BACKGROUND);
 
-  let floatingTitle = createRef<CodeBlock>();
+  let titleLayout = createRef<Layout>();
+  const titleRows = createRefArray<Txt>();
 
   view.add(
-    <CodeBlock
-      ref={floatingTitle}
-      fontFamily={"JetBrains Mono"}
-      code={"a simple web server"}
+    <Layout
+      ref={titleLayout}
+      direction={"column"}
+      alignSelf={"center"}
+      layout
     />,
   );
 
-  // TODO: Title
-
   yield* slideTransition(Direction.Left, 1);
+
+  const titleParts = ["async in action:", "a simple web server"];
+
+  titleLayout().add(
+    titleParts.map((_) => (
+      <Txt
+        ref={titleRows}
+        fontFamily={"JetBrains Mono"}
+        fontSize={82}
+        fill={"white"}
+        justifyContent={"center"}
+      />
+    )),
+  );
+
+  yield* all(
+    ...zip(titleRows, titleParts).map(([row, part], i) =>
+      row.text(part, 1.5 + 0.25 * (i + 1)),
+    ),
+  );
+
   yield* beginSlide("bad_code");
 
   // 1. show bad example - not leveraging concurreny
 
-  let floatingCode = createRef<CodeBlock>();
+  const floatingCode = createRef<CodeBlock>();
 
   view.add(
     <Layout>
@@ -84,7 +113,11 @@ async fn main() -> Result<()> {
     </Layout>,
   );
 
-  yield* all(floatingTitle().opacity(0, 1), floatingCode().opacity(1, 2.0));
+  yield* all(
+    ...titleRows.map((t) => t.text("", 1)),
+    ...titleRows.map((t) => t.opacity(0, 1)),
+    floatingCode().opacity(1, 2.0),
+  );
 
   yield* beginSlide("bad_code_clean");
 
@@ -149,7 +182,7 @@ async fn main() -> Result<()> {
   yield* floatingCode().selection([...lines(0, 2), ...serviceFnRange], 1);
 
   yield* beginSlide("explanation");
-  yield* floatingCode().selection(DEFAULT, 1);
+  yield* floatingCode().selection(DEFAULT, 2);
 
   yield* beginSlide("benchmark");
   yield* floatingCode().opacity(0, 1.5);
