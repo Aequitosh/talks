@@ -7,6 +7,9 @@
     "build": "tsc && vite build"
   },
   "dependencies": {
+    "@lezer/cpp": "^1.1.2",
+    "@lezer/python": "^1.1.13",
+    "@lezer/rust": "^1.0.2",
     "@motion-canvas/2d": "^3.11.0",
     "@motion-canvas/core": "^3.11.0",
     "@motion-canvas/ffmpeg": "^1.1.0",
