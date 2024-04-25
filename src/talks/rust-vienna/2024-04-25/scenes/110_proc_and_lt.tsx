@@ -79,6 +79,8 @@ export default makeScene2D(function*(view) {
 
   const underscores = titleTo.split("\n").map(part => "_".repeat(part.length)).join("\n");
 
+  title().opacity(0);
+
   yield* all(
     title().opacity(1, 1),
     title().text(underscores, 1).to(titleTo, 1.5),
