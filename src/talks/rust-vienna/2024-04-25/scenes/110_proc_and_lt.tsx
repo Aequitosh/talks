@@ -538,17 +538,19 @@ impl Foo {
     displaySubItem(2, " * smart pointers bridge memory models")
   );
 
-  yield* beginSlide("next_scene");
+  yield* beginSlide("questions");
 
   yield* chain(
     all(
-      ...range(4).map(n => (
-        hideSubItem(n)
-      )),
+      ...range(4).map(n => (hideSubItem(n)))
     ),
-    chain(
-      title().text(NOBREAK_SPACE, 1.5, easeOutQuad),
-      title().height(0, 0),
-    ),
+    title().text("Questions?", 1.5),
+  );
+
+  yield* beginSlide("next_scene");
+
+  yield* chain(
+    title().text(NOBREAK_SPACE, 1.5, easeOutQuad),
+    title().height(0, 0),
   );
 })
