@@ -7,13 +7,13 @@
       null
     ],
     "size": {
-      "x": 1920,
-      "y": 1080
+      "x": 3840,
+      "y": 2160
     },
     "audioOffset": 0
   },
   "preview": {
-    "fps": 60,
+    "fps": 90,
     "resolutionScale": 1
   },
   "rendering": {

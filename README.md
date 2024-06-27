@@ -36,4 +36,8 @@ in a containerized environment.
 * The container doesn't have any mount points at the moment, which means that
   `src/` directory is baked directly into the image. This is somewhat suboptimal,
   but I haven't bothered to update the [`Dockerfile`](./Dockerfile) yet.
+* The talks `rust-vienna/2023-11-30` and `rust-vienna/2024-04-05` have been made
+  with the assumption that they'll run on 1080p screens, so you'll have to
+  change the resolution in `project.meta` accordingly. Newer talks are made with
+  4K resolution by default.
 
