@@ -1,10 +1,11 @@
 import { makeProject } from '@motion-canvas/core';
 
-import intro from './talks/rust-vienna/2024-10-29/scenes/000_intro?scene';
-import strings from './talks/rust-vienna/2024-10-29/scenes/100_strings?scene';
-import end from './talks/rust-vienna/2024-10-29/scenes/300_end?scene';
+import intro from './talks/0xA-science-association/2024-11-12/scenes/000_intro?scene';
+import who_cares from './talks/0xA-science-association/2024-11-12/scenes/100_who_cares?scene';
+import code from './talks/0xA-science-association/2024-11-12/scenes/200_code?scene';
+import end from './talks/0xA-science-association/2024-11-12/scenes/300_end?scene';
 
 export default makeProject({
-  scenes: [intro, strings, end],
+  scenes: [intro, who_cares, code, end],
 });
 
