@@ -1,21 +1,58 @@
-import { Layout, Txt, Rect, Img, Code, LezerHighlighter, CODE, lines, CubicBezier, QuadBezier, Spline } from "@motion-canvas/2d";
+import {
+  Layout,
+  Txt,
+  Rect,
+  Img,
+  Code,
+  LezerHighlighter,
+  CODE,
+  lines,
+  CubicBezier,
+  QuadBezier,
+  Spline,
+} from "@motion-canvas/2d";
 import { makeScene2D } from "@motion-canvas/2d/lib/scenes";
-import { beginSlide, createRef, TimingFunction, Reference, easeInQuad, easeInBack, easeOutBack, easeInOutBack, easeOutQuad, easeInOutQuad, range, createRefMap, createRefArray, createSignal, DEFAULT, Vector2, easeInBounce, easeOutBounce } from "@motion-canvas/core";
+import {
+  beginSlide,
+  createRef,
+  TimingFunction,
+  Reference,
+  easeInQuad,
+  easeInBack,
+  easeOutBack,
+  easeInOutBack,
+  easeOutQuad,
+  easeInOutQuad,
+  range,
+  createRefMap,
+  createRefArray,
+  createSignal,
+  DEFAULT,
+  Vector2,
+  easeInBounce,
+  easeOutBounce,
+} from "@motion-canvas/core";
 import { all, chain, waitFor } from "@motion-canvas/core/lib/flow";
-import { DEFAULT_COLOR_BACKGROUND, DEFAULT_FONT, make_viewport_unit_functions, NOBREAK_SPACE, rem } from "./defaults";
+import {
+  DEFAULT_COLOR_BACKGROUND,
+  DEFAULT_FONT,
+  make_viewport_unit_functions,
+  NOBREAK_SPACE,
+  rem,
+} from "./defaults";
 
-import stringsMeme from '../assets/rust_strings.jpg';
+import stringsMeme from "../assets/rust_strings.jpg";
 
-import { monokaiDarkStyle } from '@uiw/codemirror-theme-monokai';
+import { monokaiDarkStyle } from "@uiw/codemirror-theme-monokai";
 
-import { HighlightStyle } from '@codemirror/language';
-import { parser } from '@lezer/rust';
+import { HighlightStyle } from "@codemirror/language";
+import { parser } from "@lezer/rust";
 
 const codeStyle = HighlightStyle.define(monokaiDarkStyle);
 
 Code.defaultHighlighter = new LezerHighlighter(parser, codeStyle);
 
-export default makeScene2D(function*(view) {
+export default makeScene2D(function* (view) {
   const [vw, vh, vmin, vmax] = make_viewport_unit_functions(view);
 
   view.fill(DEFAULT_COLOR_BACKGROUND);
@@ -35,19 +72,12 @@ export default makeScene2D(function*(view) {
       direction={"column"}
       rowGap={"20%"}
       layout
-    >
-    </Layout>
+    ></Layout>,
   );
 
   titleLayout().add(
     <>
-      <Rect
-        direction={"column"}
-        width={"100%"}
-        rowGap={vh(5)}
-        textWrap
-        layout
-      >
+      <Rect direction={"column"} width={"100%"} rowGap={vh(5)} textWrap layout>
         <Txt
           ref={textFieldRefs.title}
           fontSize={rem(6)}
@@ -55,21 +85,19 @@ export default makeScene2D(function*(view) {
           fill={"white"}
           paddingBottom={vh(5)}
         />
-        {
-          ["a", "b", "c"].map(refName => (
-            <Txt
-              ref={textFieldRefs[refName]}
-              fontSize={rem(2.5)}
-              width={"100%"}
-              fill={"white"}
-            />
-          ))
-        }
+        {["a", "b", "c"].map((refName) => (
+          <Txt
+            ref={textFieldRefs[refName]}
+            fontSize={rem(2.5)}
+            width={"100%"}
+            fill={"white"}
+          />
+        ))}
       </Rect>
-    </>
+    </>,
   );
 
-  const typewriter = function*(
+  const typewriter = function* (
     txtRef: Reference<Txt>,
     text: string,
     totalDuration: number = 1,
@@ -84,7 +112,7 @@ export default makeScene2D(function*(view) {
     );
   };
 
-  const erase = function*(
+  const erase = function* (
     txtRef: Reference<Txt>,
     totalDuration: number,
     useAlternative: boolean = false,
@@ -107,7 +135,7 @@ export default makeScene2D(function*(view) {
   };
 
   // Because I'm too lazy to layout stuff properly
-  for (const ref of textFieldRefs.mapRefs(ref => ref)) {
+  for (const ref of textFieldRefs.mapRefs((ref) => ref)) {
     ref.text(NOBREAK_SPACE);
   }
 
@@ -131,7 +159,7 @@ export default makeScene2D(function*(view) {
       alignSelf={"center"}
       opacity={0}
       alpha={0}
-    />
+    />,
   );
 
   imgMeme().fill("white");
@@ -141,7 +169,7 @@ export default makeScene2D(function*(view) {
     all(
       imgMeme().opacity(1, 0.65, easeInQuad),
       imgMeme().alpha(1, 0.65, easeInQuad),
-    )
+    ),
   );
 
   yield* beginSlide("strings_meme_hidden");
@@ -159,10 +187,7 @@ export default makeScene2D(function*(view) {
 
   yield* beginSlide("string_taxonomy");
 
-  yield* chain(
-    erase(textFieldRefs.a, 1.65, true),
-    title().fontSize(rem(3), 1),
-  );
+  yield* chain(erase(textFieldRefs.a, 1.65, true), title().fontSize(rem(3), 1));
 
   const codeLayout = createRef<Layout>();
 
@@ -181,23 +206,11 @@ export default makeScene2D(function*(view) {
       columnGap={vw(10)}
       layout
     >
-      <Code
-        ref={codeBlocks.str}
-        code={''}
-      />
-      <Code
-        ref={codeBlocks.osstr}
-        code={''}
-      />
-      <Code
-        ref={codeBlocks.cstr}
-        code={''}
-      />
-      <Code
-        ref={codeBlocks.path}
-        code={''}
-      />
-    </Layout>
+      <Code ref={codeBlocks.str} code={""} />
+      <Code ref={codeBlocks.osstr} code={""} />
+      <Code ref={codeBlocks.cstr} code={""} />
+      <Code ref={codeBlocks.path} code={""} />
+    </Layout>,
   );
 
   yield* beginSlide("taxonomy_string");
@@ -233,32 +246,18 @@ export default makeScene2D(function*(view) {
 
   yield* all(
     codeBlocks.str().code(" ", 0.6),
-    chain(
-      waitFor(0.15),
-      codeBlocks.osstr().code(" ", 0.8, easeInOutBack),
-    ),
-    chain(
-      waitFor(0.3),
-      codeBlocks.cstr().code(" ", 0.8, easeInOutBack),
-    ),
-    chain(
-      waitFor(0.45),
-      codeBlocks.path().code(" ", 0.8, easeInOutBack),
-    ),
+    chain(waitFor(0.15), codeBlocks.osstr().code(" ", 0.8, easeInOutBack)),
+    chain(waitFor(0.3), codeBlocks.cstr().code(" ", 0.8, easeInOutBack)),
+    chain(waitFor(0.45), codeBlocks.path().code(" ", 0.8, easeInOutBack)),
   );
 
-  yield* all(...codeBlocks.mapRefs(code => code.code("", 0.1)));
+  yield* all(...codeBlocks.mapRefs((code) => code.code("", 0.1)));
 
   codeLayout().removeChildren();
 
   const stringExampleCode = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={stringExampleCode}
-      code={''}
-    />
-  );
+  codeLayout().add(<Code ref={stringExampleCode} code={""} />);
 
   yield* beginSlide("string_deref_example_wrong");
 
@@ -280,7 +279,7 @@ fn foo(arg: &str) {
 
   yield* beginSlide("end_string_deref_example");
 
-  yield* stringExampleCode().code('', 0.6);
+  yield* stringExampleCode().code("", 0.6);
 
   codeLayout().removeChildren();
 
@@ -304,12 +303,7 @@ fn foo(arg: &str) {
 
   const derefCodeExample = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={derefCodeExample}
-      code={''}
-    />
-  );
+  codeLayout().add(<Code ref={derefCodeExample} code={""} />);
 
   codeLayout().fontSize(rem(2));
 
@@ -351,7 +345,11 @@ fn main() {
     println!("{borrowed}");
 }`;
 
-  yield* derefCodeExample().code(derefStringExampleCommented, 0.6, easeInOutQuad);
+  yield* derefCodeExample().code(
+    derefStringExampleCommented,
+    0.6,
+    easeInOutQuad,
+  );
 
   yield* beginSlide("deref_example_fixed");
 
@@ -380,7 +378,8 @@ fn main() {
 
   yield* beginSlide("deref_explanation_continued");
 
-  nextSubtitleA = "implement if a value of one type transparently behaves like a value of the target type";
+  nextSubtitleA =
+    "implement if a value of one type transparently behaves like a value of the target type";
 
   yield* chain(
     erase(textFieldRefs.a, 1),
@@ -391,9 +390,7 @@ fn main() {
 
   nextSubtitleB = "compiler implicitly inserts calls to Deref::deref";
 
-  yield* chain(
-    typewriter(textFieldRefs.b, nextSubtitleB, 1.5, easeInOutQuad),
-  );
+  yield* chain(typewriter(textFieldRefs.b, nextSubtitleB, 1.5, easeInOutQuad));
 
   yield* beginSlide("deref_coercion");
 
@@ -407,10 +404,7 @@ fn main() {
   yield* beginSlide("deref_main_point");
 
   yield* all(
-    chain(
-      waitFor(0.5),
-      erase(textFieldRefs.b, 1),
-    ),
+    chain(waitFor(0.5), erase(textFieldRefs.b, 1)),
     erase(textFieldRefs.c, 1),
   );
 
@@ -446,18 +440,11 @@ fn main() {
 
   nextTitle = "AsRef<T>";
 
-  yield* chain(
-    title().text(nextTitle, 0.8, easeInOutQuad),
-  );
+  yield* chain(title().text(nextTitle, 0.8, easeInOutQuad));
 
   const asrefCodeExample = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={asrefCodeExample}
-      code={''}
-    />
-  );
+  codeLayout().add(<Code ref={asrefCodeExample} code={""} />);
 
   codeLayout().fontSize(rem(2));
 
@@ -544,18 +531,11 @@ fn read_config(path: impl AsRef<Path>) -> Config {
 
   nextTitle = "Borrow<T>";
 
-  yield* chain(
-    title().text(nextTitle, 0.8, easeInOutQuad),
-  );
+  yield* chain(title().text(nextTitle, 0.8, easeInOutQuad));
 
   const borrowCodeExample = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={borrowCodeExample}
-      code={''}
-    />
-  );
+  codeLayout().add(<Code ref={borrowCodeExample} code={""} />);
 
   codeLayout().fontSize(rem(2));
 
@@ -571,7 +551,7 @@ where
 
   yield* beginSlide("borrow_explanation");
 
-  nextSubtitleA = "very similar to AsRef<T>, but has more semantics"
+  nextSubtitleA = "very similar to AsRef<T>, but has more semantics";
 
   yield* borrowCodeExample().code("", 0.8, easeInOutBack);
 
@@ -579,7 +559,8 @@ where
 
   yield* beginSlide("borrow_explanation_cont");
 
-  nextSubtitleA = "Eq, Ord and Hash must be equivalent for borrowed and owned values";
+  nextSubtitleA =
+    "Eq, Ord and Hash must be equivalent for borrowed and owned values";
   nextSubtitleB = "x.borrow() == y.borrow() should be the same as x == y";
 
   yield* chain(
@@ -596,9 +577,9 @@ where
   nextTitle = "Summary: Borrowing";
 
   yield* all(
-    ...[textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].reverse().map(
-      (ref, i) => erase(ref, 1 + i * 0.25, false, easeInOutQuad)
-    ),
+    ...[textFieldRefs.a, textFieldRefs.b, textFieldRefs.c]
+      .reverse()
+      .map((ref, i) => erase(ref, 1 + i * 0.25, false, easeInOutQuad)),
   );
 
   yield* chain(
@@ -612,19 +593,10 @@ where
 
   codeLayout().add(
     <>
-      <Code
-        ref={traitCodeBlocks.deref}
-        code={''}
-      />
-      <Code
-        ref={traitCodeBlocks.asref}
-        code={''}
-      />
-      <Code
-        ref={traitCodeBlocks.borrow}
-        code={''}
-      />
-    </>
+      <Code ref={traitCodeBlocks.deref} code={""} />
+      <Code ref={traitCodeBlocks.asref} code={""} />
+      <Code ref={traitCodeBlocks.borrow} code={""} />
+    </>,
   );
 
   yield* all(
@@ -657,27 +629,20 @@ where
 
     chain(
       waitFor(0.3),
-      traitCodeBlocks.borrow().code("Borrow<T> => BorrowMut<T>", 0.8, easeInOutBack),
+      traitCodeBlocks
+        .borrow()
+        .code("Borrow<T> => BorrowMut<T>", 0.8, easeInOutBack),
     ),
   );
 
   yield* beginSlide("chapter_clone");
 
   yield* all(
-    chain(
-      waitFor(0),
-      traitCodeBlocks.deref().code(" ", 0.8, easeInOutBack),
-    ),
+    chain(waitFor(0), traitCodeBlocks.deref().code(" ", 0.8, easeInOutBack)),
 
-    chain(
-      waitFor(0.15),
-      traitCodeBlocks.asref().code(" ", 0.8, easeInOutBack),
-    ),
+    chain(waitFor(0.15), traitCodeBlocks.asref().code(" ", 0.8, easeInOutBack)),
 
-    chain(
-      waitFor(0.3),
-      traitCodeBlocks.borrow().code(" ", 0.8, easeInOutBack),
-    ),
+    chain(waitFor(0.3), traitCodeBlocks.borrow().code(" ", 0.8, easeInOutBack)),
   );
 
   nextTitle = "The Clone Trait";
@@ -697,12 +662,7 @@ where
 
   const cloneCodeExample = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={cloneCodeExample}
-      code={''}
-    />
-  );
+  codeLayout().add(<Code ref={cloneCodeExample} code={""} />);
 
   codeLayout().fontSize(rem(2));
 
@@ -728,10 +688,7 @@ pub trait Clone: Sized {
 
   nextSubtitleA = "used to clone data, duh";
 
-  yield* chain(
-    waitFor(1),
-    textFieldRefs.a().text(nextSubtitleA, 2),
-  );
+  yield* chain(waitFor(1), textFieldRefs.a().text(nextSubtitleA, 2));
 
   yield* beginSlide("clone_explained_ownership");
 
@@ -750,36 +707,26 @@ pub trait Clone: Sized {
   yield* beginSlide("chapter_toowned");
 
   yield* all(
-    ...[textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].reverse().map(
-      (ref, i) => erase(ref, 1 + i * 0.25, false, easeInOutQuad)
-    ),
+    ...[textFieldRefs.a, textFieldRefs.b, textFieldRefs.c]
+      .reverse()
+      .map((ref, i) => erase(ref, 1 + i * 0.25, false, easeInOutQuad)),
   );
 
   nextTitle = "The ToOwned Trait";
 
-  yield* chain(
-    title().text(nextTitle, 0.8, easeInOutQuad),
-  );
+  yield* chain(title().text(nextTitle, 0.8, easeInOutQuad));
 
   yield* beginSlide("toowned_continued");
 
   nextTitle = "ToOwned";
 
-  yield* chain(
-    title().text(nextTitle, 0.8, easeInOutQuad),
-  );
+  yield* chain(title().text(nextTitle, 0.8, easeInOutQuad));
 
   codeLayout().removeChildren();
 
   const toOwnedCodeExample = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={toOwnedCodeExample}
-      code={''}
-    />
-  );
-
+  codeLayout().add(<Code ref={toOwnedCodeExample} code={""} />);
 
   const toOwnedTraitDefinition = CODE`\
 pub trait ToOwned {
@@ -828,7 +775,11 @@ fn main() {
     println!("{cloned}");
 }`;
 
-  yield* toOwnedCodeExample().code(toOwnedExampleCloneReveal, 0.6, easeInOutQuad);
+  yield* toOwnedCodeExample().code(
+    toOwnedExampleCloneReveal,
+    0.6,
+    easeInOutQuad,
+  );
 
   yield* beginSlide("toowned_example_actual");
 
@@ -875,7 +826,8 @@ fn main() {
 
   nextSubtitleA = "ToOwned generalises Clone to borrowed data";
   nextSubtitleB = "Clone only works for &T -> T";
-  nextSubtitleC = "ToOwned can construct owned data from any borrow, unlike Clone";
+  nextSubtitleC =
+    "ToOwned can construct owned data from any borrow, unlike Clone";
 
   yield* chain(
     title().fontSize(rem(4), 0.8, easeInOutBack),
@@ -890,22 +842,25 @@ fn main() {
 
   yield* beginSlide("summary_owning_end");
 
-
   yield* all(
-    ...[title, textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].reverse().map(
-      (ref, i) => {
+    ...[title, textFieldRefs.a, textFieldRefs.b, textFieldRefs.c]
+      .reverse()
+      .map((ref, i) => {
         ref().minHeight(ref().height());
 
         return chain(
-          ref().text(ref().text().replace(/\S/g, "_"), 0.5 + i * 0.125, easeOutQuad),
+          ref().text(
+            ref().text().replace(/\S/g, "_"),
+            0.5 + i * 0.125,
+            easeOutQuad,
+          ),
           ref().text(NOBREAK_SPACE, 0.5 + i * 0.125, easeOutQuad),
         );
-      }
-    ),
+      }),
   );
 
-  [title, textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].map(
-    ref => ref().minHeight(DEFAULT)
+  [title, textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].map((ref) =>
+    ref().minHeight(DEFAULT),
   );
 
   yield* beginSlide("chapter_cow");
@@ -923,15 +878,9 @@ fn main() {
 
   yield* title().text(nextTitle, 0.8, easeInOutQuad);
 
-
   const cowCodeExample = createRef<Code>();
 
-  codeLayout().add(
-    <Code
-      ref={cowCodeExample}
-      code={''}
-    />
-  );
+  codeLayout().add(<Code ref={cowCodeExample} code={""} />);
 
   codeLayout().fontSize(rem(2));
 
@@ -964,19 +913,19 @@ fn validate_ffi_str(input: &CStr) -> Cow<CStr> {
     cowCodeExample().code(cowExampleCstr, 0.8, easeInOutBack),
   );
 
-  yield* beginSlide("cow_example_cstr_highlight")
+  yield* beginSlide("cow_example_cstr_highlight");
 
   yield* chain(
     cowCodeExample().selection(
-      cowCodeExample().findAllRanges(/cow\S* ?/gi), 0.8, easeInOutBack
+      cowCodeExample().findAllRanges(/cow\S* ?/gi),
+      0.8,
+      easeInOutBack,
     ),
   );
 
-  yield* beginSlide("cow_example_cstr_unhighlight")
+  yield* beginSlide("cow_example_cstr_unhighlight");
 
-  yield* chain(
-    cowCodeExample().selection(DEFAULT, 0.8, easeInOutBack),
-  );
+  yield* chain(cowCodeExample().selection(DEFAULT, 0.8, easeInOutBack));
 
   yield* beginSlide("cow_example_mut_param");
 
@@ -1011,7 +960,9 @@ fn adjust_file_ending(path: &mut Cow<Path>) {
 
   yield* chain(
     cowCodeExample().selection(
-      cowCodeExample().findAllRanges(/&mut cow\S*>/gi), 0.8, easeInOutBack
+      cowCodeExample().findAllRanges(/&mut cow\S*>/gi),
+      0.8,
+      easeInOutBack,
     ),
   );
 
@@ -1019,15 +970,15 @@ fn adjust_file_ending(path: &mut Cow<Path>) {
 
   yield* chain(
     cowCodeExample().selection(
-      cowCodeExample().findAllRanges(/\.to_mut\(\)/gi), 0.8, easeInOutBack
+      cowCodeExample().findAllRanges(/\.to_mut\(\)/gi),
+      0.8,
+      easeInOutBack,
     ),
   );
 
   yield* beginSlide("cow_example_mut_param_unhighlight");
 
-  yield* chain(
-    cowCodeExample().selection(DEFAULT, 0.8, easeInOutBack),
-  );
+  yield* chain(cowCodeExample().selection(DEFAULT, 0.8, easeInOutBack));
 
   yield* beginSlide("cow_explained");
 
@@ -1053,17 +1004,15 @@ fn adjust_file_ending(path: &mut Cow<Path>) {
 
   yield* beginSlide("cow_honorable_mentions");
 
-  [title, textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].map(
-    ref => ref().minHeight(ref().height())
+  [title, textFieldRefs.a, textFieldRefs.b, textFieldRefs.c].map((ref) =>
+    ref().minHeight(ref().height()),
   );
 
-  yield* all(
-    erase(textFieldRefs.b, 1.5),
-    erase(textFieldRefs.c, 1.5),
-  );
+  yield* all(erase(textFieldRefs.b, 1.5), erase(textFieldRefs.c, 1.5));
 
-  yield* textFieldRefs.a().text("Rc::make_mut and Arc::make_mut work in a similar way!", 1.5);
-
+  yield* textFieldRefs
+    .a()
+    .text("Rc::make_mut and Arc::make_mut work in a similar way!", 1.5);
 
   yield* beginSlide("questions");
 
@@ -1076,15 +1025,18 @@ fn adjust_file_ending(path: &mut Cow<Path>) {
 
   yield* beginSlide("next_scene");
 
-
   yield* all(
-    ...[...textFieldRefs.mapRefs(ref => ref)]
+    ...[...textFieldRefs.mapRefs((ref) => ref)]
       .reverse()
-      .map(
-        (ref, i) => chain(
-          ref.text(ref.text().replace(/\S/g, "_"), 0.25 + i * 0.125, easeOutQuad),
+      .map((ref, i) =>
+        chain(
+          ref.text(
+            ref.text().replace(/\S/g, "_"),
+            0.25 + i * 0.125,
+            easeOutQuad,
+          ),
           ref.text(NOBREAK_SPACE, 0.25 + i * 0.125, easeOutQuad),
-        )
+        ),
       ),
   );
 });

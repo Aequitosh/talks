@@ -1,16 +1,42 @@
-import { CODE, Code, Layout, LezerHighlighter, lines, makeScene2D, Rect, Txt } from "@motion-canvas/2d";
-import { all, beginSlide, chain, createRef, createRefArray, DEFAULT, easeOutQuad, makeRef, range, waitFor } from "@motion-canvas/core";
-import { DEFAULT_COLOR_BACKGROUND, DEFAULT_FONT, make_viewport_unit_functions, NOBREAK_SPACE, rem } from "./defaults";
+import {
+  CODE,
+  Code,
+  Layout,
+  LezerHighlighter,
+  lines,
+  makeScene2D,
+  Rect,
+  Txt,
+} from "@motion-canvas/2d";
+import {
+  all,
+  beginSlide,
+  chain,
+  createRef,
+  createRefArray,
+  DEFAULT,
+  easeOutQuad,
+  makeRef,
+  range,
+  waitFor,
+} from "@motion-canvas/core";
+import {
+  DEFAULT_COLOR_BACKGROUND,
+  DEFAULT_FONT,
+  make_viewport_unit_functions,
+  NOBREAK_SPACE,
+  rem,
+} from "./defaults";
 
-import { parser } from '@lezer/rust';
+import { parser } from "@lezer/rust";
 
-import { parser as pyParser } from '@lezer/python';
+import { parser as pyParser } from "@lezer/python";
 
 Code.defaultHighlighter = new LezerHighlighter(parser);
 
 const PythonHighlighter = new LezerHighlighter(pyParser);
 
-export default makeScene2D(function*(view) {
+export default makeScene2D(function* (view) {
   const [vw, vh, vmin, vmax] = make_viewport_unit_functions(view);
 
   const COLOR_PY_BLUE1 = "#4b8bbe";
@@ -36,18 +62,14 @@ export default makeScene2D(function*(view) {
   const subItemCount = 10;
 
   view.add(
-    <Layout
-      layout
-      width={"100%"}
-      height={"100%"}
-    >
+    <Layout layout width={"100%"} height={"100%"}>
       <Txt
         ref={packageNameRef}
         fill={"white"}
         fontSize={rem(2)}
         margin={rem(2)}
       />
-    </Layout>
+    </Layout>,
   );
 
   view.add(
@@ -59,41 +81,33 @@ export default makeScene2D(function*(view) {
       rowGap={vh(5)}
       layout
     >
-      <Txt
-        ref={title}
-        fontSize={rem(6)}
-        fill={"white"}
-      />
-      <Txt
-        ref={subtitle}
-        fontSize={rem(2.5)}
-        fill={"white"}
-      />
+      <Txt ref={title} fontSize={rem(6)} fill={"white"} />
+      <Txt ref={subtitle} fontSize={rem(2.5)} fill={"white"} />
       {range(subItemCount).map(() => (
-        <Txt
-          ref={subItems}
-          fontSize={rem(2)}
-          fill={"white"}
-        />
+        <Txt ref={subItems} fontSize={rem(2)} fill={"white"} />
       ))}
-    </Layout>
+    </Layout>,
   );
 
   // Helpers for items below title
 
-  const displaySubItem = function*(index: number, text: string, totalDuration: number = 2.0) {
+  const displaySubItem = function* (
+    index: number,
+    text: string,
+    totalDuration: number = 2.0,
+  ) {
     yield* chain(
       subItems[index].height(vh(7.5), totalDuration * 0.1),
       subItems[index].text(text, totalDuration * 0.9),
     );
   };
 
-  const hideSubItem = function*(index: number, totalDuration: number = 2.0) {
+  const hideSubItem = function* (index: number, totalDuration: number = 2.0) {
     yield* chain(
       subItems[index].text(NOBREAK_SPACE, totalDuration * 0.5),
       subItems[index].height(0, totalDuration * 0.5),
     );
-  }
+  };
 
   // Architecture
 
@@ -101,19 +115,11 @@ export default makeScene2D(function*(view) {
   subtitleTo = "PyO3 in the wild";
 
   yield* all(
-    ...range(10).map(n => (
-      hideSubItem(n)
-    )),
-    chain(
-      all(
-        title().text("_".repeat(titleTo.length), 1).to(titleTo, 1),
-      ),
-    ),
+    ...range(10).map((n) => hideSubItem(n)),
+    chain(all(title().text("_".repeat(titleTo.length), 1).to(titleTo, 1))),
     chain(
       waitFor(0.6),
-      all(
-        subtitle().text("_".repeat(subtitleTo.length), 1).to(subtitleTo, 1),
-      ),
+      all(subtitle().text("_".repeat(subtitleTo.length), 1).to(subtitleTo, 1)),
     ),
   );
 
@@ -123,20 +129,14 @@ export default makeScene2D(function*(view) {
   subtitleTo = "https://pola.rs/";
 
   yield* all(
-    all(
-      subtitle().text(subtitleTo, 1),
-      subtitle().fill("66d9ee", 1),
-    ),
+    all(subtitle().text(subtitleTo, 1), subtitle().fill("66d9ee", 1)),
     title().text(titleTo, 1),
   );
 
   yield* beginSlide("package_rect");
 
   yield* chain(
-    all(
-      title().text(NOBREAK_SPACE, 1),
-      subtitle().text(NOBREAK_SPACE, 1),
-    ),
+    all(title().text(NOBREAK_SPACE, 1), subtitle().text(NOBREAK_SPACE, 1)),
   );
 
   subtitle().fill("white");
@@ -177,13 +177,8 @@ export default makeScene2D(function*(view) {
         rowGap={vh(5)}
         direction={"column"}
       >
-        <Txt
-          ref={packageTextLeft}
-        />
-        <Code
-          ref={packageCodeLeft}
-          fontSize={rem(1)}
-        />
+        <Txt ref={packageTextLeft} />
+        <Code ref={packageCodeLeft} fontSize={rem(1)} />
       </Rect>
       <Rect
         ref={packageRectMiddle}
@@ -198,13 +193,8 @@ export default makeScene2D(function*(view) {
         rowGap={vh(5)}
         direction={"column"}
       >
-        <Txt
-          ref={packageTextMiddle}
-        />
-        <Code
-          ref={packageCodeMiddle}
-          fontSize={rem(1)}
-        />
+        <Txt ref={packageTextMiddle} />
+        <Code ref={packageCodeMiddle} fontSize={rem(1)} />
       </Rect>
       <Rect
         ref={packageRectRight}
@@ -219,33 +209,30 @@ export default makeScene2D(function*(view) {
         rowGap={vh(5)}
         direction={"column"}
       >
-        <Txt
-          ref={packageTextRight}
-        />
-        <Code
-          ref={packageCodeRight}
-          fontSize={rem(1)}
-        />
+        <Txt ref={packageTextRight} />
+        <Code ref={packageCodeRight} fontSize={rem(1)} />
       </Rect>
-    </Layout>
+    </Layout>,
   );
 
   packageNameTo = "polars";
 
   yield* all(
-    packageNameRef().text("_".repeat(packageNameTo.length), 1).to(packageNameTo, 1),
-    packageRectLeft().opacity(1, 1)
+    packageNameRef()
+      .text("_".repeat(packageNameTo.length), 1)
+      .to(packageNameTo, 1),
+    packageRectLeft().opacity(1, 1),
   );
 
   yield* beginSlide("highlight_package");
 
   yield* chain(
-    ...range(3).map(_ => (
+    ...range(3).map((_) =>
       chain(
         packageRectLeft().stroke("white", 0.2),
         packageRectLeft().stroke("gray", 0.2),
-      )
-    )),
+      ),
+    ),
   );
 
   yield* beginSlide("package_python_rust1");
@@ -263,7 +250,7 @@ export default makeScene2D(function*(view) {
 
   yield* all(
     packageTextLeft().text("Python", 1),
-    packageTextRight().text("Rust", 1)
+    packageTextRight().text("Rust", 1),
   );
 
   yield* beginSlide("python_dataframe");
@@ -282,17 +269,12 @@ export default makeScene2D(function*(view) {
       fontSize={rem(1.8)}
       layout
     >
-      <Code
-        ref={codePythonRef}
-        highlighter={PythonHighlighter}
-      />
-      <Code
-        ref={codeRustRef}
-      />
-    </Rect>
+      <Code ref={codePythonRef} highlighter={PythonHighlighter} />
+      <Code ref={codeRustRef} />
+    </Rect>,
   );
 
-  packageNameTo = "polars: Python"
+  packageNameTo = "polars: Python";
 
   yield* all(
     archLayout().opacity(0, 1),
@@ -323,19 +305,16 @@ class Dataframe:
   packageCodeLeft().code(pyDataframe);
 
   yield* codeCompLayoutRef().opacity(0, 0.75);
-  yield* all(
-    codePythonRef().code("", 0.75),
-    archLayout().opacity(1, 0.75),
-  );
+  yield* all(codePythonRef().code("", 0.75), archLayout().opacity(1, 0.75));
 
   yield* beginSlide("rust_dataframe");
 
-  packageNameTo = "polars: Rust"
+  packageNameTo = "polars: Rust";
 
   yield* all(
     archLayout().opacity(0, 1),
     packageNameRef().text(packageNameTo, 1),
-  )
+  );
 
   yield* codeCompLayoutRef().opacity(1, 0.75);
 
@@ -409,14 +388,22 @@ impl PyDataFrame {
   subtitle().height(0);
 
   yield* all(
-    displaySubItem(0, "Rust data structures are exposed via PyO3\nas Python classes contained in a native module", 3),
+    displaySubItem(
+      0,
+      "Rust data structures are exposed via PyO3\nas Python classes contained in a native module",
+      3,
+    ),
     displaySubItem(1, NOBREAK_SPACE, 3),
   );
 
   yield* beginSlide("summary_item_1");
 
   yield* all(
-    displaySubItem(2, "In Python, these classes are wrapped in\nsome manner, so that docstrings,\ntype annotations, etc. can be provided", 3),
+    displaySubItem(
+      2,
+      "In Python, these classes are wrapped in\nsome manner, so that docstrings,\ntype annotations, etc. can be provided",
+      3,
+    ),
   );
 
   yield* beginSlide("questions");
@@ -434,9 +421,6 @@ impl PyDataFrame {
 
   yield* all(
     title().text(NOBREAK_SPACE, 1, easeOutQuad),
-    ...range(subItemCount).map(n => (
-      hideSubItem(n, 2)
-    ))
+    ...range(subItemCount).map((n) => hideSubItem(n, 2)),
   );
-
 });

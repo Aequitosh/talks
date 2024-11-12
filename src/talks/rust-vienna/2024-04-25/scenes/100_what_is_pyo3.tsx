@@ -1,17 +1,38 @@
-import { Code, CODE, LezerHighlighter, Layout, makeScene2D, Rect, Txt } from "@motion-canvas/2d";
-import { DEFAULT, all, beginSlide, chain, createRef, createRefArray, range, easeOutQuad } from "@motion-canvas/core";
-import { parser } from '@lezer/rust';
+import {
+  Code,
+  CODE,
+  LezerHighlighter,
+  Layout,
+  makeScene2D,
+  Rect,
+  Txt,
+} from "@motion-canvas/2d";
+import {
+  DEFAULT,
+  all,
+  beginSlide,
+  chain,
+  createRef,
+  createRefArray,
+  range,
+  easeOutQuad,
+} from "@motion-canvas/core";
+import { parser } from "@lezer/rust";
 
-import { parser as pyParser } from '@lezer/python';
+import { parser as pyParser } from "@lezer/python";
 
-import { DEFAULT_COLOR_BACKGROUND, DEFAULT_FONT, NOBREAK_SPACE } from "./defaults";
+import {
+  DEFAULT_COLOR_BACKGROUND,
+  DEFAULT_FONT,
+  NOBREAK_SPACE,
+} from "./defaults";
 
 Code.defaultHighlighter = new LezerHighlighter(parser);
 
 const PythonHighlighter = new LezerHighlighter(pyParser);
 
-export default makeScene2D(function*(view) {
-  view.fill(DEFAULT_COLOR_BACKGROUND)
+export default makeScene2D(function* (view) {
+  view.fill(DEFAULT_COLOR_BACKGROUND);
 
   const baseLayout = createRef<Layout>();
   const innerLayout = createRef<Layout>();
@@ -38,40 +59,35 @@ export default makeScene2D(function*(view) {
         alignItems={"start"}
         layout
       >
-        <Txt
-          ref={title}
-          width={"100%"}
-          fontSize={120}
-          fill={"white"}
-        />
+        <Txt ref={title} width={"100%"} fontSize={120} fill={"white"} />
         {range(5).map(() => (
-          <Txt
-            ref={subItems}
-            fontSize={65}
-            fill={"white"}
-          />
+          <Txt ref={subItems} fontSize={65} fill={"white"} />
         ))}
       </Rect>
-    </Layout>
+    </Layout>,
   );
 
   title().height(baseLayout().height() * 0.25);
 
   // Helpers for items below title
 
-  const displaySubItem = function*(index: number, text: string, totalDuration: number = 2.0) {
+  const displaySubItem = function* (
+    index: number,
+    text: string,
+    totalDuration: number = 2.0,
+  ) {
     yield* chain(
       subItems[index].height(baseLayout().height() * 0.2, totalDuration * 0.25),
       subItems[index].text(text, totalDuration * 0.75),
     );
   };
 
-  const hideSubItem = function*(index: number, totalDuration: number = 2.0) {
+  const hideSubItem = function* (index: number, totalDuration: number = 2.0) {
     yield* chain(
       subItems[index].text("", totalDuration * 0.25),
       subItems[index].height(0, totalDuration * 0.75),
     );
-  }
+  };
 
   // Expectations
 
@@ -85,7 +101,7 @@ export default makeScene2D(function*(view) {
   yield* beginSlide("expect_item_1");
 
   yield* all(
-    displaySubItem(0, " "),  // cheap placeholder for gap lmao
+    displaySubItem(0, " "), // cheap placeholder for gap lmao
     displaySubItem(1, " * show PyO3 & its inner workings"),
   );
 
@@ -97,7 +113,6 @@ export default makeScene2D(function*(view) {
 
   yield* displaySubItem(3, " * open source & contributing");
 
-
   // What is PyO3?
 
   yield* beginSlide("what_is_pyo3");
@@ -105,12 +120,8 @@ export default makeScene2D(function*(view) {
   titleTo = "What is PyO3?";
 
   yield* all(
-    ...range(4).map(n => (
-      hideSubItem(n)
-    )),
-    chain(
-      title().text(titleTo, 3),
-    )
+    ...range(4).map((n) => hideSubItem(n)),
+    chain(title().text(titleTo, 3)),
   );
 
   yield* beginSlide("its_elegant");
@@ -160,12 +171,7 @@ struct MyClass {
     title().height(0, 0),
   );
 
-  innerLayout().add(
-    <Code
-      ref={codeShowcaseRef}
-      fontSize={36}
-    />
-  );
+  innerLayout().add(<Code ref={codeShowcaseRef} fontSize={36} />);
 
   yield* beginSlide("show_prelude");
 
@@ -195,7 +201,7 @@ struct MyClass {
 
   yield* beginSlide("it_can_interact_with_python_objects");
 
-  yield* codeShowcaseRef().code('', 0.6);
+  yield* codeShowcaseRef().code("", 0.6);
 
   const codeCompPython = CODE`\
 def example():
@@ -251,14 +257,9 @@ def example():
       columnGap={100}
       layout
     >
-      <Code
-        ref={codePythonRef}
-        highlighter={PythonHighlighter}
-      />
-      <Code
-        ref={codeRustRef}
-      />
-    </Rect>
+      <Code ref={codePythonRef} highlighter={PythonHighlighter} />
+      <Code ref={codeRustRef} />
+    </Rect>,
   );
 
   yield* codePythonRef().code(codeCompPython, 1.0);
@@ -272,13 +273,14 @@ def example():
 
   yield* beginSlide("highlight_fancy_types");
 
-  const selectionRanges = codeRustRef().findAllRanges(/python<'py>|bound<.*>/gi);
+  const selectionRanges = codeRustRef().findAllRanges(
+    /python<'py>|bound<.*>/gi,
+  );
 
   yield* chain(
-    ...range(selectionRanges.length).map(n => (
-        codeRustRef().selection(selectionRanges.slice(0, n + 1), 0.6)
-      )
-    )
+    ...range(selectionRanges.length).map((n) =>
+      codeRustRef().selection(selectionRanges.slice(0, n + 1), 0.6),
+    ),
   );
 
   yield* beginSlide("highlight_lifetimes");
@@ -304,10 +306,7 @@ def example():
 
   yield* beginSlide("summary");
 
-  yield* all(
-    codeRustRef().opacity(0, 1),
-    codePythonRef().opacity(0, 1),
-  );
+  yield* all(codeRustRef().opacity(0, 1), codePythonRef().opacity(0, 1));
 
   codePythonRef().code("");
   codeRustRef().code("");
@@ -321,7 +320,7 @@ def example():
   yield* beginSlide("summary_item_1");
 
   yield* all(
-    displaySubItem(0, " "),  // placeholder for gap
+    displaySubItem(0, " "), // placeholder for gap
     displaySubItem(1, " * idiomatic"),
   );
 
@@ -352,15 +351,7 @@ def example():
   yield* beginSlide("next_scene");
 
   yield* chain(
-    all(
-      ...range(4).map(n => (
-        hideSubItem(n)
-      )),
-    ),
-    chain(
-      title().text(NOBREAK_SPACE, 1.5, easeOutQuad),
-      title().height(0, 0),
-    ),
+    all(...range(4).map((n) => hideSubItem(n))),
+    chain(title().text(NOBREAK_SPACE, 1.5, easeOutQuad), title().height(0, 0)),
   );
-
-})
+});

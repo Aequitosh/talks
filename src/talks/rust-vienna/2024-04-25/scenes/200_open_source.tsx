@@ -1,17 +1,40 @@
-import { Code, CODE, LezerHighlighter, Layout, makeScene2D, Rect, Txt, lines } from "@motion-canvas/2d";
-import { DEFAULT, all, beginSlide, chain, createRef, createRefArray, range, easeOutQuad, waitFor } from "@motion-canvas/core";
-import { parser } from '@lezer/rust';
+import {
+  Code,
+  CODE,
+  LezerHighlighter,
+  Layout,
+  makeScene2D,
+  Rect,
+  Txt,
+  lines,
+} from "@motion-canvas/2d";
+import {
+  DEFAULT,
+  all,
+  beginSlide,
+  chain,
+  createRef,
+  createRefArray,
+  range,
+  easeOutQuad,
+  waitFor,
+} from "@motion-canvas/core";
+import { parser } from "@lezer/rust";
 
-import { parser as pyParser } from '@lezer/python';
+import { parser as pyParser } from "@lezer/python";
 
-import { DEFAULT_COLOR_BACKGROUND, DEFAULT_FONT, NOBREAK_SPACE } from "./defaults";
+import {
+  DEFAULT_COLOR_BACKGROUND,
+  DEFAULT_FONT,
+  NOBREAK_SPACE,
+} from "./defaults";
 
 Code.defaultHighlighter = new LezerHighlighter(parser);
 
 const PythonHighlighter = new LezerHighlighter(pyParser);
 
-export default makeScene2D(function*(view) {
-  view.fill(DEFAULT_COLOR_BACKGROUND)
+export default makeScene2D(function* (view) {
+  view.fill(DEFAULT_COLOR_BACKGROUND);
 
   const baseLayout = createRef<Layout>();
   const innerLayout = createRef<Layout>();
@@ -38,12 +61,7 @@ export default makeScene2D(function*(view) {
         alignItems={"start"}
         layout
       >
-        <Txt
-          ref={title}
-          width={"100%"}
-          fontSize={120}
-          fill={"white"}
-        />
+        <Txt ref={title} width={"100%"} fontSize={120} fill={"white"} />
         {range(5).map(() => (
           <Txt
             ref={subItems}
@@ -54,26 +72,30 @@ export default makeScene2D(function*(view) {
           />
         ))}
       </Rect>
-    </Layout>
+    </Layout>,
   );
 
   title().height(baseLayout().height() * 0.25);
 
   // Helpers for items below title
 
-  const displaySubItem = function*(index: number, text: string, totalDuration: number = 2.0) {
+  const displaySubItem = function* (
+    index: number,
+    text: string,
+    totalDuration: number = 2.0,
+  ) {
     yield* chain(
       subItems[index].height(baseLayout().height() * 0.2, totalDuration * 0.25),
       subItems[index].text(text, totalDuration * 0.75),
     );
   };
 
-  const hideSubItem = function*(index: number, totalDuration: number = 2.0) {
+  const hideSubItem = function* (index: number, totalDuration: number = 2.0) {
     yield* chain(
       subItems[index].text("", totalDuration * 0.25),
       subItems[index].height(0, totalDuration * 0.75),
     );
-  }
+  };
 
   // PyO3 and Open Source
 
@@ -107,51 +129,34 @@ export default makeScene2D(function*(view) {
       fontSize={55}
       layout
     >
-      <Rect
-        direction={"column"}
-        width={"40%"}
-        gap={75}
-        layout
-      >
+      <Rect direction={"column"} width={"40%"} gap={75} layout>
         {range(6).map(() => (
-          <Txt
-            ref={listItems}
-            fill={"white"}
-            opacity={0}
-          />
+          <Txt ref={listItems} fill={"white"} opacity={0} />
         ))}
       </Rect>
-      <Rect
-        direction={"column"}
-        width={"60%"}
-        gap={75}
-        layout
-      >
+      <Rect direction={"column"} width={"60%"} gap={75} layout>
         {range(6).map(() => (
-          <Txt
-            ref={listItemDescs}
-            fill={"white"}
-            opacity={0}
-          />
+          <Txt ref={listItemDescs} fill={"white"} opacity={0} />
         ))}
       </Rect>
-    </Layout>
+    </Layout>,
   );
 
   yield* title().text("", 1, easeOutQuad);
 
-  const displayListItem = function*(index: number, name: string, desc: string) {
+  const displayListItem = function* (
+    index: number,
+    name: string,
+    desc: string,
+  ) {
     yield* chain(
-      all(
-        listItems[index].opacity(1, 1),
-        listItems[index].text(name, 1),
-      ),
+      all(listItems[index].opacity(1, 1), listItems[index].text(name, 1)),
       all(
         listItemDescs[index].opacity(1, 1),
         listItemDescs[index].text(desc, 1),
       ),
     );
-  }
+  };
 
   yield* beginSlide("list_0_polars");
 
@@ -180,8 +185,8 @@ export default makeScene2D(function*(view) {
   yield* beginSlide("pyo3_contributing");
 
   yield* all(
-    chain(...listItems.map(i => i.opacity(0, 0.25)).reverse()),
-    chain(...listItemDescs.map(i => i.opacity(0, 0.25))),
+    chain(...listItems.map((i) => i.opacity(0, 0.25)).reverse()),
+    chain(...listItemDescs.map((i) => i.opacity(0, 0.25))),
   );
 
   title().opacity(0);
@@ -194,8 +199,8 @@ export default makeScene2D(function*(view) {
   yield* beginSlide("ceph_dashboard");
 
   yield* all(
-    displaySubItem(0, " "),  // gap
-    displaySubItem(1, " "),  // another gap (yeah I'm lazy)
+    displaySubItem(0, " "), // gap
+    displaySubItem(1, " "), // another gap (yeah I'm lazy)
     displaySubItem(2, "Post in Proxmox Forum"),
   );
 
@@ -205,7 +210,10 @@ export default makeScene2D(function*(view) {
 
   yield* beginSlide("ceph_dashboard_subinterpreters");
 
-  yield* displaySubItem(2, "Reason: PyO3 doesn't support CPython's sub-interpreters");
+  yield* displaySubItem(
+    2,
+    "Reason: PyO3 doesn't support CPython's sub-interpreters",
+  );
 
   yield* beginSlide("ceph_dashboard_fixed");
 
@@ -215,9 +223,9 @@ export default makeScene2D(function*(view) {
 
   yield* chain(
     all(
-      ...subItems.map(i => i.text("", 1.5)),
-      ...subItems.map(i => i.height(0, 1.5)),
-      ...subItems.map(i => i.opacity(0, 1.5)),
+      ...subItems.map((i) => i.text("", 1.5)),
+      ...subItems.map((i) => i.height(0, 1.5)),
+      ...subItems.map((i) => i.opacity(0, 1.5)),
     ),
     chain(
       title().text("Python", 0.75),
@@ -227,11 +235,11 @@ export default makeScene2D(function*(view) {
 
   yield* beginSlide("what_are_subinterpreters");
 
-  subItems.map(i => i.opacity(1));
+  subItems.map((i) => i.opacity(1));
 
   yield* all(
-    displaySubItem(0, " "),  // gap
-    displaySubItem(1, " "),  // another gap (yeah I'm lazy)
+    displaySubItem(0, " "), // gap
+    displaySubItem(1, " "), // another gap (yeah I'm lazy)
     displaySubItem(2, "Run multiple interpreters in the same process"),
   );
 
@@ -252,7 +260,7 @@ export default makeScene2D(function*(view) {
   yield* chain(
     displaySubItem(2, ""),
     title().text("", 1),
-    all(...subItems.map(i => i.height(0, 0.5))),
+    all(...subItems.map((i) => i.height(0, 0.5))),
     title().text("But why are\nsubinterpreters\nimportant?", 2.5),
   );
 
@@ -292,8 +300,7 @@ export default makeScene2D(function*(view) {
 
   yield* chain(
     displaySubItem(2, ""),
-    all(...subItems.map(i => i.height(0, 1))),
+    all(...subItems.map((i) => i.height(0, 1))),
     title().text("", 2, easeOutQuad),
   );
-
 });

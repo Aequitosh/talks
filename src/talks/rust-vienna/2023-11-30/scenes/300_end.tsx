@@ -12,9 +12,9 @@ import {
 } from "@motion-canvas/core";
 import { all, chain } from "@motion-canvas/core/lib/flow";
 import { DEFAULT_COLOR_BACKGROUND } from "./defaults";
-import repoQRCode from '../assets/repo_qr_code.png';
+import repoQRCode from "../assets/repo_qr_code.png";
 
-export default makeScene2D(function*(view) {
+export default makeScene2D(function* (view) {
   view.fill(DEFAULT_COLOR_BACKGROUND);
 
   yield* beginSlide("closing_thoughts");
@@ -70,7 +70,6 @@ export default makeScene2D(function*(view) {
     </Layout>,
   );
 
-
   const titleRowsTo = ["Thank you", "for your attention"];
   const middleRowFieldsTo = ["Max R. Carrara", "Proxmox"];
   const lastRowTo = "@aequitosh";
@@ -108,17 +107,8 @@ export default makeScene2D(function*(view) {
   const qr = createRef<Img>();
 
   titleLayout().add(
-    <Img
-      ref={qr}
-      src={repoQRCode}
-      size={0}
-      alignSelf={"center"}
-      opacity={0}
-    />
+    <Img ref={qr} src={repoQRCode} size={0} alignSelf={"center"} opacity={0} />,
   );
 
-  yield* all(
-    qr().size(500, 2),
-    qr().opacity(1, 1.5)
-  );
+  yield* all(qr().size(500, 2), qr().opacity(1, 1.5));
 });

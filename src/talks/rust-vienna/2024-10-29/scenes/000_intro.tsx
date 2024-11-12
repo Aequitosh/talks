@@ -1,10 +1,26 @@
 import { Layout, Txt, Rect, Line } from "@motion-canvas/2d";
 import { makeScene2D } from "@motion-canvas/2d/lib/scenes";
-import { beginSlide, createRef, easeInBounce, easeInExpo, easeInOutExpo, easeInOutQuad, easeInOutQuart, easeOutQuad, range } from "@motion-canvas/core";
+import {
+  beginSlide,
+  createRef,
+  easeInBounce,
+  easeInExpo,
+  easeInOutExpo,
+  easeInOutQuad,
+  easeInOutQuart,
+  easeOutQuad,
+  range,
+} from "@motion-canvas/core";
 import { all, chain, waitFor } from "@motion-canvas/core/lib/flow";
-import { DEFAULT_COLOR_BACKGROUND, DEFAULT_FONT, make_viewport_unit_functions, NOBREAK_SPACE, rem } from "./defaults";
+import {
+  DEFAULT_COLOR_BACKGROUND,
+  DEFAULT_FONT,
+  make_viewport_unit_functions,
+  NOBREAK_SPACE,
+  rem,
+} from "./defaults";
 
-export default makeScene2D(function*(view) {
+export default makeScene2D(function* (view) {
   const [vw, vh, vmin, vmax] = make_viewport_unit_functions(view);
 
   view.fill(DEFAULT_COLOR_BACKGROUND);
@@ -29,13 +45,7 @@ export default makeScene2D(function*(view) {
   const username = createRef<Txt>();
   const usernameTo = "@aequitosh";
 
-  const refs = [
-    title,
-    subtitle,
-    name,
-    company,
-    username,
-  ];
+  const refs = [title, subtitle, name, company, username];
 
   view.add(
     <Layout
@@ -45,57 +55,25 @@ export default makeScene2D(function*(view) {
       direction={"column"}
       rowGap={"20%"}
       layout
-    >
-    </Layout>
+    ></Layout>,
   );
 
   titleLayout().add(
     <>
-      <Rect
-        direction={"column"}
-        width={"100%"}
-        rowGap={"20%"}
-        textWrap
-        layout
-      >
-        <Txt
-          ref={title}
-          fontSize={rem(6)}
-          width={"100%"}
-          fill={"white"}
-        />
-        <Txt
-          ref={subtitle}
-          fontSize={rem(3)}
-          width={"100%"}
-          fill={"white"}
-        />
+      <Rect direction={"column"} width={"100%"} rowGap={"20%"} textWrap layout>
+        <Txt ref={title} fontSize={rem(6)} width={"100%"} fill={"white"} />
+        <Txt ref={subtitle} fontSize={rem(3)} width={"100%"} fill={"white"} />
       </Rect>
 
-      <Rect
-        direction={"column"}
-        rowGap={vh(1.5)}
-        fontSize={rem(1.75)}
-        layout
-      >
-        <Txt
-          ref={name}
-          fill={"white"}
-        />
-        <Txt
-          ref={company}
-          fill={"white"}
-        />
-        <Txt
-          ref={username}
-          fill={"white"}
-        />
+      <Rect direction={"column"} rowGap={vh(1.5)} fontSize={rem(1.75)} layout>
+        <Txt ref={name} fill={"white"} />
+        <Txt ref={company} fill={"white"} />
+        <Txt ref={username} fill={"white"} />
       </Rect>
-    </>
+    </>,
   );
 
-  const makeIntermediateText = (text: string) => text
-    .replace(/\S/g, "_");
+  const makeIntermediateText = (text: string) => text.replace(/\S/g, "_");
 
   // Because I'm too lazy to layout stuff properly
   for (const ref of refs) {
@@ -116,7 +94,9 @@ export default makeScene2D(function*(view) {
       waitFor(0.5),
       all(
         subtitle().opacity(1, 1),
-        subtitle().text(makeIntermediateText(subtitleTo), 0.75).to(subtitleTo, 1.75),
+        subtitle()
+          .text(makeIntermediateText(subtitleTo), 0.75)
+          .to(subtitleTo, 1.75),
       ),
     ),
   );
@@ -132,14 +112,18 @@ export default makeScene2D(function*(view) {
       waitFor(0.25),
       all(
         company().opacity(1, 1),
-        company().text(makeIntermediateText(companyTo), 0.75).to(companyTo, 1.5),
+        company()
+          .text(makeIntermediateText(companyTo), 0.75)
+          .to(companyTo, 1.5),
       ),
     ),
     chain(
       waitFor(0.5),
       all(
         username().opacity(1, 1),
-        username().text(makeIntermediateText(usernameTo), 0.75).to(usernameTo, 1.5),
+        username()
+          .text(makeIntermediateText(usernameTo), 0.75)
+          .to(usernameTo, 1.5),
       ),
     ),
   );
@@ -151,18 +135,20 @@ export default makeScene2D(function*(view) {
   yield* all(
     chain(
       all(
-        ...[subtitle, name, company, username].reverse().map(
-          (ref, i) => chain(
-            ref().text(ref().text().replace(/\S/g, "_"), 0.25 + i * 0.125, easeOutQuad),
-            ref().text(NOBREAK_SPACE, 0.25 + i * 0.125, easeOutQuad),
-          )
-        ),
+        ...[subtitle, name, company, username]
+          .reverse()
+          .map((ref, i) =>
+            chain(
+              ref().text(
+                ref().text().replace(/\S/g, "_"),
+                0.25 + i * 0.125,
+                easeOutQuad,
+              ),
+              ref().text(NOBREAK_SPACE, 0.25 + i * 0.125, easeOutQuad),
+            ),
+          ),
       ),
-      all(
-        chain(
-          title().text(nextTitle, 1, easeInOutQuad),
-        ),
-      ),
+      all(chain(title().text(nextTitle, 1, easeInOutQuad))),
     ),
   );
 
@@ -185,11 +171,17 @@ export default makeScene2D(function*(view) {
   title().minHeight(title().height());
 
   yield* all(
-    ...[title, subtitle, name, company, username].reverse().map(
-      (ref, i) => chain(
-        ref().text(ref().text().replace(/\S/g, "_"), 0.25 + i * 0.125, easeOutQuad),
-        ref().text(NOBREAK_SPACE, 0.25 + i * 0.125, easeOutQuad),
-      )
-    ),
+    ...[title, subtitle, name, company, username]
+      .reverse()
+      .map((ref, i) =>
+        chain(
+          ref().text(
+            ref().text().replace(/\S/g, "_"),
+            0.25 + i * 0.125,
+            easeOutQuad,
+          ),
+          ref().text(NOBREAK_SPACE, 0.25 + i * 0.125, easeOutQuad),
+        ),
+      ),
   );
 });

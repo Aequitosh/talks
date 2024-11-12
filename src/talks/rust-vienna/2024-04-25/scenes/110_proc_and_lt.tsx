@@ -1,17 +1,40 @@
-import { Code, CODE, LezerHighlighter, Layout, makeScene2D, Rect, Txt, lines } from "@motion-canvas/2d";
-import { DEFAULT, all, beginSlide, chain, createRef, createRefArray, range, easeOutQuad, waitFor } from "@motion-canvas/core";
-import { parser } from '@lezer/rust';
+import {
+  Code,
+  CODE,
+  LezerHighlighter,
+  Layout,
+  makeScene2D,
+  Rect,
+  Txt,
+  lines,
+} from "@motion-canvas/2d";
+import {
+  DEFAULT,
+  all,
+  beginSlide,
+  chain,
+  createRef,
+  createRefArray,
+  range,
+  easeOutQuad,
+  waitFor,
+} from "@motion-canvas/core";
+import { parser } from "@lezer/rust";
 
-import { parser as pyParser } from '@lezer/python';
+import { parser as pyParser } from "@lezer/python";
 
-import { DEFAULT_COLOR_BACKGROUND, DEFAULT_FONT, NOBREAK_SPACE } from "./defaults";
+import {
+  DEFAULT_COLOR_BACKGROUND,
+  DEFAULT_FONT,
+  NOBREAK_SPACE,
+} from "./defaults";
 
 Code.defaultHighlighter = new LezerHighlighter(parser);
 
 const PythonHighlighter = new LezerHighlighter(pyParser);
 
-export default makeScene2D(function*(view) {
-  view.fill(DEFAULT_COLOR_BACKGROUND)
+export default makeScene2D(function* (view) {
+  view.fill(DEFAULT_COLOR_BACKGROUND);
 
   const baseLayout = createRef<Layout>();
   const innerLayout = createRef<Layout>();
@@ -38,46 +61,44 @@ export default makeScene2D(function*(view) {
         alignItems={"start"}
         layout
       >
-        <Txt
-          ref={title}
-          width={"100%"}
-          fontSize={120}
-          fill={"white"}
-        />
+        <Txt ref={title} width={"100%"} fontSize={120} fill={"white"} />
         {range(5).map(() => (
-          <Txt
-            ref={subItems}
-            fontSize={65}
-            fill={"white"}
-          />
+          <Txt ref={subItems} fontSize={65} fill={"white"} />
         ))}
       </Rect>
-    </Layout>
+    </Layout>,
   );
 
   title().height(baseLayout().height() * 0.25);
 
   // Helpers for items below title
 
-  const displaySubItem = function*(index: number, text: string, totalDuration: number = 2.0) {
+  const displaySubItem = function* (
+    index: number,
+    text: string,
+    totalDuration: number = 2.0,
+  ) {
     yield* chain(
       subItems[index].height(baseLayout().height() * 0.2, totalDuration * 0.25),
       subItems[index].text(text, totalDuration * 0.75),
     );
   };
 
-  const hideSubItem = function*(index: number, totalDuration: number = 2.0) {
+  const hideSubItem = function* (index: number, totalDuration: number = 2.0) {
     yield* chain(
       subItems[index].text("", totalDuration * 0.25),
       subItems[index].height(0, totalDuration * 0.75),
     );
-  }
+  };
 
   // Expectations
 
   yield* beginSlide("proc_and_lt");
 
-  const underscores = titleTo.split("\n").map(part => "_".repeat(part.length)).join("\n");
+  const underscores = titleTo
+    .split("\n")
+    .map((part) => "_".repeat(part.length))
+    .join("\n");
 
   title().opacity(0);
 
@@ -106,11 +127,8 @@ export default makeScene2D(function*(view) {
       alignItems={"center"}
       layout
     >
-      <Code
-        ref={codeRef}
-        fontSize={32}
-      />
-    </Rect>
+      <Code ref={codeRef} fontSize={32} />
+    </Rect>,
   );
 
   const exampleProcMacro = CODE`\
@@ -233,12 +251,9 @@ impl my_library::MakeDef {
   const rangesToReplace = codeRef().findAllRanges(/.*#\[doc.*/gi);
 
   yield* all(
-    ...rangesToReplace.map((r, index) => (
-      chain(
-        waitFor(index * 0.2),
-        codeRef().code.replace(r, "", 0.6),
-      )
-    ))
+    ...rangesToReplace.map((r, index) =>
+      chain(waitFor(index * 0.2), codeRef().code.replace(r, "", 0.6)),
+    ),
   );
 
   yield* all(
@@ -247,9 +262,13 @@ impl my_library::MakeDef {
     codeRef().code.remove(lines(9, 10), 0.6),
   );
 
-  const rangesLibName = codeRef().findAllRanges(/#\[export_name.*|my_library/gi);
+  const rangesLibName = codeRef().findAllRanges(
+    /#\[export_name.*|my_library/gi,
+  );
   const rangeExportName = codeRef().findFirstRange(/#\[export_name.*/gi);
-  const rangeExternFn = codeRef().findFirstRange(/pub unsafe extern.*\n.*\n.*/gim);
+  const rangeExternFn = codeRef().findFirstRange(
+    /pub unsafe extern.*\n.*\n.*/gim,
+  );
 
   yield* beginSlide("proc_macro_expand_two_highlight_lib_name");
 
@@ -269,7 +288,10 @@ impl my_library::MakeDef {
 
   yield* beginSlide("proc_macro_expand_two_highlight_moduledef");
 
-  yield* codeRef().selection(codeRef().findAllRanges(/.*struct.*|pub static.*/gi), 0.6);
+  yield* codeRef().selection(
+    codeRef().findAllRanges(/.*struct.*|pub static.*/gi),
+    0.6,
+  );
 
   yield* beginSlide("proc_macro_expand_three");
 
@@ -311,34 +333,29 @@ Python::with_gil(|py: Python<'py>| {
   codeRef().fontSize(60);
   codeRef().code(codeSpToken);
 
-  yield* all(
-    title().text("", 1.5),
-    codeRef().opacity(1, 1.5),
-  );
+  yield* all(title().text("", 1.5), codeRef().opacity(1, 1.5));
 
   yield* beginSlide("smart_pointers_py");
 
-  yield* all(
-    title().text("Py<T>", 1.5),
-    codeRef().opacity(0, 1.5),
-  );
+  yield* all(title().text("Py<T>", 1.5), codeRef().opacity(0, 1.5));
 
   yield* beginSlide("smart_pointers_py_desc");
 
   yield* all(
     displaySubItem(0, " "),
-    displaySubItem(1, '"A GIL-independent reference\n to an object allocated\n on the Python heap."', 4.0),
+    displaySubItem(
+      1,
+      '"A GIL-independent reference\n to an object allocated\n on the Python heap."',
+      4.0,
+    ),
   );
 
   yield* beginSlide("smart_pointers_py_code");
 
   yield* all(
     title().text("", 1.5),
-    ...range(4).map(n => (hideSubItem(n, 3.0))),
-    chain(
-      codeRef().opacity(1, 1),
-      codeRef().fontSize(prevFontSize, 0.6),
-    ),
+    ...range(4).map((n) => hideSubItem(n, 3.0)),
+    chain(codeRef().opacity(1, 1), codeRef().fontSize(prevFontSize, 0.6)),
   );
 
   yield* beginSlide("smart_pointers_py_code_more");
@@ -391,10 +408,7 @@ impl Foo {
 
   yield* beginSlide("smart_pointers_bound");
 
-  yield* all(
-    title().text("Bound<'py, T>", 1.5),
-    codeRef().opacity(0, 1.5),
-  );
+  yield* all(title().text("Bound<'py, T>", 1.5), codeRef().opacity(0, 1.5));
 
   yield* beginSlide("smart_pointers_bound_desc");
 
@@ -407,10 +421,8 @@ impl Foo {
 
   yield* all(
     title().text("", 1.5),
-    ...range(4).map(n => (hideSubItem(n, 3.0))),
-    chain(
-      codeRef().opacity(1, 1),
-    ),
+    ...range(4).map((n) => hideSubItem(n, 3.0)),
+    chain(codeRef().opacity(1, 1)),
   );
 
   yield* beginSlide("smart_pointers_bound_code_highlight_call");
@@ -515,9 +527,7 @@ impl Foo {
 
   yield* beginSlide("summary");
 
-  yield* all(
-    codeRef().opacity(0, 1),
-  );
+  yield* all(codeRef().opacity(0, 1));
 
   codeRef().code("");
 
@@ -536,16 +546,12 @@ impl Foo {
 
   yield* beginSlide("summary_item_2");
 
-  yield* all(
-    displaySubItem(2, " * smart pointers bridge memory models")
-  );
+  yield* all(displaySubItem(2, " * smart pointers bridge memory models"));
 
   yield* beginSlide("questions");
 
   yield* chain(
-    all(
-      ...range(4).map(n => (hideSubItem(n)))
-    ),
+    all(...range(4).map((n) => hideSubItem(n))),
     title().text("Questions?", 1.5),
   );
 
@@ -555,4 +561,4 @@ impl Foo {
     title().text(NOBREAK_SPACE, 1.5, easeOutQuad),
     title().height(0, 0),
   );
-})
+});

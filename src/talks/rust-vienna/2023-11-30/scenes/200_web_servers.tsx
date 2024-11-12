@@ -23,7 +23,7 @@ import { Layout, Txt } from "@motion-canvas/2d";
 import { DEFAULT_COLOR_BACKGROUND } from "./defaults";
 import { zip } from "../util/functions";
 
-export default makeScene2D(function*(view) {
+export default makeScene2D(function* (view) {
   view.fill(DEFAULT_COLOR_BACKGROUND);
 
   let titleLayout = createRef<Layout>();
@@ -225,7 +225,7 @@ async fn main() -> Result<()> {
   yield* chain(...machineFields.map((field) => field.opacity(1, 0.5)));
 
   yield* beginSlide("benchmark");
-  yield* all(...machineFields.map((field) => field.opacity(0, 0.75)))
+  yield* all(...machineFields.map((field) => field.opacity(0, 0.75)));
 
   let benchmarkCargoCmd = createRef<CodeBlock>();
   let benchmarkResults = createRef<CodeBlock>();
@@ -333,8 +333,8 @@ async fn main() -> Result<()> {
         tokio::task::spawn(async move {
         ${insert(`    `)}let http = http1::Builder::new();
         ${insert(
-    `    `,
-  )}let connection = http.serve_connection(io, service_fn(hello));
+          `    `,
+        )}let connection = http.serve_connection(io, service_fn(hello));
 
         ${insert(`    `)}if let Err(err) = connection.await {
             ${insert(`    `)}println!("Error serving connection: {err:?}");
@@ -382,9 +382,13 @@ Transfer/sec:     45.90MB`)}`;
   yield* benchmarkResults().selection(lines(7, 7), 1);
 
   yield* beginSlide("better_server_reveal");
-  yield* all(benchmarkResults().opacity(0, 1), benchmarkCargoCmd().opacity(0, 1));
+  yield* all(
+    benchmarkResults().opacity(0, 1),
+    benchmarkCargoCmd().opacity(0, 1),
+  );
 
-  yield floatingCode().code(`async fn spawn_listener(addr: SocketAddr) -> Result<mpsc::Receiver<(TcpStream, SocketAddr)>> {
+  yield floatingCode()
+    .code(`async fn spawn_listener(addr: SocketAddr) -> Result<mpsc::Receiver<(TcpStream, SocketAddr)>> {
     let (sender, receiver) = mpsc::channel(1024);
 
     tokio::task::spawn(async move {
@@ -406,16 +410,14 @@ Transfer/sec:     45.90MB`)}`;
     });
 
     Ok(receiver)
-}`
-  );
+}`);
 
-  yield* all(
-    floatingCode().opacity(1, 1),
-  );
+  yield* all(floatingCode().opacity(1, 1));
 
   yield* beginSlide("better_server_reveal_main");
   yield* all(
-    floatingCode().edit(2, false)`${edit(`async fn spawn_listener(addr: SocketAddr) -> Result<mpsc::Receiver<(TcpStream, SocketAddr)>> {
+    floatingCode().edit(2, false)`${edit(
+      `async fn spawn_listener(addr: SocketAddr) -> Result<mpsc::Receiver<(TcpStream, SocketAddr)>> {
     let (sender, receiver) = mpsc::channel(1024);
 
     tokio::task::spawn(async move {
@@ -437,7 +439,8 @@ Transfer/sec:     45.90MB`)}`;
     });
 
     Ok(receiver)
-}`, `#[tokio::main]
+}`,
+      `#[tokio::main]
 async fn main() -> Result<()> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
 
@@ -460,7 +463,8 @@ async fn main() -> Result<()> {
             return Ok(());
         }
     }
-}`)}`,
+}`,
+    )}`,
   );
 
   yield* beginSlide("better_server_benchmark");
@@ -471,7 +475,9 @@ async fn main() -> Result<()> {
   );
 
   // Reset CodeBoxes here or otherwise it glitches out smh
-  yield benchmarkCargoCmd().code(`$ cargo run --release --example good_server_mk2`);
+  yield benchmarkCargoCmd().code(
+    `$ cargo run --release --example good_server_mk2`,
+  );
   yield benchmarkResults().code(
     `$ wrk -t $(( $(nproc) / 2 )) -d 60s -c 1000 http://127.0.0.1:8080/`,
   );
@@ -498,11 +504,14 @@ Transfer/sec:     60.46MB`)}`;
   yield* beginSlide("better_server_benchmark_highlight");
   yield* benchmarkResults().selection(lines(7, 7), 1);
 
-
   yield* beginSlide("even_better_server_reveal");
-  yield* all(benchmarkResults().opacity(0, 1), benchmarkCargoCmd().opacity(0, 1));
+  yield* all(
+    benchmarkResults().opacity(0, 1),
+    benchmarkCargoCmd().opacity(0, 1),
+  );
 
-  yield floatingCode().code(`async fn spawn_handler(mut receiver: mpsc::Receiver<(TcpStream, SocketAddr)>) -> Result<JoinHandle<()>> {
+  yield floatingCode()
+    .code(`async fn spawn_handler(mut receiver: mpsc::Receiver<(TcpStream, SocketAddr)>) -> Result<JoinHandle<()>> {
     let handle = tokio::task::spawn(async move {
         loop {
             if let Some((stream, _peer)) = receiver.recv().await {
@@ -523,16 +532,14 @@ Transfer/sec:     60.46MB`)}`;
     });
 
     Ok(handle)
-}`
-  );
+}`);
 
-  yield* all(
-    floatingCode().opacity(1, 1),
-  );
+  yield* all(floatingCode().opacity(1, 1));
 
   yield* beginSlide("even_better_server_reveal_main");
   yield* all(
-    floatingCode().edit(2, false)`${edit(`async fn spawn_handler(mut receiver: mpsc::Receiver<(TcpStream, SocketAddr)>) -> Result<JoinHandle<()>> {
+    floatingCode().edit(2, false)`${edit(
+      `async fn spawn_handler(mut receiver: mpsc::Receiver<(TcpStream, SocketAddr)>) -> Result<JoinHandle<()>> {
     let handle = tokio::task::spawn(async move {
         loop {
             if let Some((stream, _peer)) = receiver.recv().await {
@@ -553,7 +560,8 @@ Transfer/sec:     60.46MB`)}`;
     });
 
     Ok(handle)
-}`, `#[tokio::main]
+}`,
+      `#[tokio::main]
 async fn main() -> Result<()> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
 
@@ -561,7 +569,8 @@ async fn main() -> Result<()> {
     let handle = spawn_handler(receiver).await?;
     
     handle.await.map_err(Into::into)
-}`)}`,
+}`,
+    )}`,
   );
 
   yield* beginSlide("sync_work");
@@ -613,7 +622,8 @@ async fn main() -> Result<()> {
   yield* beginSlide("sync_work_intro");
 
   yield* floatingCode().opacity(0, 1);
-  yield floatingCode().code(`type SyncTask = Box<dyn Fn() -> Result<()> + Send + Sync>;
+  yield floatingCode()
+    .code(`type SyncTask = Box<dyn Fn() -> Result<()> + Send + Sync>;
 
 struct WorkerThread {
     handle: Option<std::thread::JoinHandle<()>>,
@@ -622,7 +632,6 @@ struct WorkerThread {
 }`);
   yield* floatingCode().opacity(1, 1);
   yield* floatingCode().fontSize(46, 1);
-
 
   yield* beginSlide("sync_work_sequential_worker");
   yield* floatingCode().opacity(0, 1);
@@ -692,7 +701,7 @@ struct WorkerThread {
                 .map_err(|err| println!("Error while joining worker thread: {err:?}"))
         });
     }
-}`)
+}`);
   yield* floatingCode().opacity(1, 1);
 
   yield* beginSlide("sync_work_seq_worker_main");
@@ -736,7 +745,5 @@ async fn main() -> Result<()> {
   yield* floatingCode().opacity(1, 1);
 
   yield* beginSlide("next_scene");
-  yield* all(
-    floatingCode().opacity(0, 1),
-  )
+  yield* all(floatingCode().opacity(0, 1));
 });
