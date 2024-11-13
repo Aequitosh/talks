@@ -100,7 +100,7 @@ export default makeScene2D(function* (view) {
       height={vh(100)}
       width={vw(100)}
       fontFamily={DEFAULT_FONT}
-      fontSize={rem(3)}
+      fontSize={rem(2)}
       direction={"column"}
       justifyContent={"center"}
       alignItems={"center"}
@@ -112,6 +112,8 @@ export default makeScene2D(function* (view) {
   const codeExample = createRef<Code>();
 
   codeLayout().add(<Code ref={codeExample} code={""} />);
+
+  let refsWithoutTitle = [textFieldRefs.a, textFieldRefs.b, textFieldRefs.c, textFieldRefs.d, textFieldRefs.e];
 
   const erase = function* (
     txtRef: Reference<Txt>,
@@ -143,7 +145,7 @@ export default makeScene2D(function* (view) {
 
   const title = textFieldRefs.title;
 
-  yield* typewriterTransition(title().text, nextTitle, 2);
+  yield* typewriterTransition(title().text, nextTitle, 1);
 
   yield* beginSlide("problems_rust_solves");
 
@@ -204,23 +206,112 @@ export default makeScene2D(function* (view) {
 
   yield* title().text(nextTitle, 0.8, easeInOutQuad);
 
-  // Rust memory safety is based on this rule: Given an object T, it is only possible to have one of the following:
-  //
-  //     Having several immutable references (&T) to the object (also known as aliasing).
-  //     Having one mutable reference (&mut T) to the object (also known as mutability).
-  //
-  //     -> enforced through borrow checker
+  yield* beginSlide("memory_safety_immutable_refs");
 
-  yield* beginSlide("chapter_null_safety");
+  yield* relTypewriterTransition(textFieldRefs.a().text, "several immutable references (&T)");
 
-  nextTitle = "Null Safety";
+  yield* beginSlide("memory_safety_mutable_refs");
 
-  yield* title().text(nextTitle, 0.8, easeInOutQuad);
+  yield* chain(
+    relTypewriterTransition(textFieldRefs.b().text, "or ..."),
+    relTypewriterTransition(textFieldRefs.c().text, "one mutable reference (&mut T)"),
+  );
 
-  // Option<T>
-  // type system
-  // typestate
-  // typestate analysis
+  yield* beginSlide("memory_safety_borrow_checker");
+
+  yield* chain(
+    relTypewriterTransition(textFieldRefs.e().text, "enforced by borrow checker at compile time"),
+  );
+
+  yield* beginSlide("memory_safety_example");
+
+  yield* all(
+    ...refsWithoutTitle.map(ref => ref().text(NOBREAK_SPACE, 1)),
+  );
+
+  let exampleCode = CODE`\
+fn takes_shared<T>(value: &T) {
+    // [...]
+}
+
+fn takes_mut<T>(value: &mut T) {
+    // [...]
+}
+
+fn takes_ownership<T>(value: T) {
+    // [...]
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("memory_safety_example_cont");
+
+  exampleCode = CODE`\
+let foo = vec![1, 2, 3];`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("memory_safety_example_cont_2");
+
+  exampleCode = CODE`\
+let foo = vec![1, 2, 3];
+
+takes_shared(&foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("memory_safety_example_cont_3");
+
+  exampleCode = CODE`\
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+takes_mut(&mut foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+
+  yield* beginSlide("memory_safety_example_cont_4");
+
+  exampleCode = CODE`\
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+takes_mut(&mut foo);
+
+takes_ownership(foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("memory_safety_example_cont_5");
+
+  exampleCode = CODE`\
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+takes_mut(&mut foo);
+
+takes_ownership(foo);
+
+// compiler error
+takes_shared(&foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("memory_safety_example_cont_5");
+
+  exampleCode = CODE`\
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+takes_mut(&mut foo);
+
+takes_ownership(foo);
+
+// compiler error
+takes_mut(&mut foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
 
   yield* beginSlide("chapter_concurrency");
 
@@ -228,29 +319,232 @@ export default makeScene2D(function* (view) {
 
   yield* title().text(nextTitle, 0.8, easeInOutQuad);
 
+  exampleCode = CODE`\
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
   // borrow checker + lifetimes ensure code may be safely shared between threads
-  // Send + Sync traits
+
+  yield* beginSlide("concurrency_threads");
+
+  exampleCode = CODE`\
+use std::thread;
+
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+
+let handle = std::thread::spawn(move || {
+    takes_shared(&foo);
+});`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("concurrency_threads_2");
+
+  exampleCode = CODE`\
+use std::thread;
+
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+
+let handle = std::thread::spawn(move || {
+    takes_mut(&mut foo);
+});`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("concurrency_threads_3");
+
+  exampleCode = CODE`\
+use std::thread;
+
+let mut foo = vec![1, 2, 3];
+
+takes_shared(&foo);
+
+let handle = std::thread::spawn(move || {
+    takes_mut(&mut foo);
+});
+
+// compiler error
+takes_shared(&foo);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("chapter_null_safety");
+
+  yield* codeExample().code("", 1, easeInOutBack);
+
+  nextTitle = "Null Safety";
+
+  yield* title().text(nextTitle, 0.8, easeInOutQuad);
+
+  // Option<T>
+  
+  yield* beginSlide("null_safety_option");
+
+  exampleCode = CODE`\
+pub enum Option<T> {
+    None,
+    Some(T),
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("null_safety_option_2");
+
+  exampleCode = CODE`\
+let some = Some("Hello World!");`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("null_safety_option_3");
+
+  exampleCode = CODE`\
+let some = Some("Hello World!");
+
+match some {
+    Some(message) => {
+        // [...]
+    },
+    None => {
+        // [...]
+    },
+};`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("null_safety_option_4");
+
+  exampleCode = CODE`\
+let some = Some("Hello World!");
+
+if let Some(message) = some {
+  // [...]
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("null_safety_option_5");
+
+  exampleCode = CODE`\
+// Same size!
+
+assert_eq!(
+    size_of::<Option<&str>>(),
+    size_of::<&str>()
+);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
 
   yield* beginSlide("chapter_interop");
+
+  yield* codeExample().code("", 1, easeInOutBack);
 
   nextTitle = "Interoperability - FFI";
 
   yield* title().text(nextTitle, 0.8, easeInOutQuad);
 
-  // ffi calls -- repr(C)
-  // checking for nullptrs
+  yield* beginSlide("interop_ffi_fn");
+
+  exampleCode = CODE`\
+use libc::size_t;
+
+#[link(name = "some_lib")]
+extern {
+    fn allocate_foo(length: size_t) -> size_t;
+}
+
+fn main() {
+    let x = unsafe { allocate_foo(100) };
+    println!("allocated foo with {} bytes", x);
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("interop_call_rust_from_C");
+
+  exampleCode = CODE`\
+#[no_mangle]
+pub extern "C" fn hello_from_rust() {
+    println!("Hello from Rust!");
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("interop_repr_C");
+
+  exampleCode = CODE`\
+use std::ffi::{CString, c_int};
+
+struct UserData {
+  name: CString,
+  surname: CString,
+  registered: c_int,
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("interop_repr_C_2");
+
+  exampleCode = CODE`\
+use std::ffi::{CString, c_int};
+
+#[repr(C)]
+struct UserData {
+  name: CString,
+  surname: CString,
+  registered: c_int,
+}`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
 
   yield* beginSlide("chapter_platforms");
+
+  yield* codeExample().code("", 1, easeInOutBack);
 
   nextTitle = "Supporting Multiple Platforms";
 
   yield* title().text(nextTitle, 0.8, easeInOutQuad);
 
-  // targets supported by Rust
-  // conditional compilation
-  // cargo
+  yield* beginSlide("platforms_cfg");
 
-  yield* beginSlide("next_scene");
+  exampleCode = CODE`\
+let machine_kind = if cfg!(unix) {
+  "unix"
+} else if cfg!(windows) {
+  "windows"
+} else {
+  "unknown"
+};
+
+println!("I'm running on a {} machine!", machine_kind);`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("platforms_features");
+
+  exampleCode = CODE`\
+#[cfg(target_os = "android")]
+call_android_specific();
+
+#[cfg(target_os = "ios")]
+call_ios_specific();`;
+
+  yield* codeExample().code(exampleCode, 1, easeInOutBack);
+
+  yield* beginSlide("bevy_demo");
+
+  yield* codeExample().code("", 1, easeInOutBack);
+
+  yield* relTypewriterTransition(textFieldRefs.a().text, "-> Demo with Bevy Engine");
+
+  yield* beginSlide("prepare_for_end");
 
   // also remove code stuff here if necessary
 
@@ -268,4 +562,6 @@ export default makeScene2D(function* (view) {
         ),
       ),
   );
+
+  yield* beginSlide("next_scene");
 });

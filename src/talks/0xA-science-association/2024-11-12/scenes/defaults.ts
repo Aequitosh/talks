@@ -10,7 +10,7 @@ import {
 export const DEFAULT_COLOR_BACKGROUND = "#111111";
 export const DEFAULT_FONT = "JetBrains Mono";
 export const DEFAULT_FONT_SIZE = 50;
-export const DEFAULT_WPM = 166; // default typing speed for relative text transitions in words per minute
+export const DEFAULT_WPM = 250; // default typing speed for relative text transitions in words per minute
 export const NOBREAK_SPACE = " ";
 
 // not "real" rem units, just relative to DEFAULT_FONT_SIZE
