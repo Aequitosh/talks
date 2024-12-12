@@ -76,12 +76,12 @@ export function typewriterTransition<TOwner = void>(
   const textTime = time - underscoresTime;
 
   return chain(
-      signal(
-        textToUnderscores(value),
-        underscoresTime,
-        timingFunction,
-        interpolationFunction,
-    ).to(value, textTime, timingFunction, interpolationFunction)
+    signal(
+      textToUnderscores(value),
+      underscoresTime,
+      timingFunction,
+      interpolationFunction,
+    ).to(value, textTime, timingFunction, interpolationFunction),
   );
 }
 

@@ -106,15 +106,17 @@ export default makeScene2D(function* (view) {
       alignItems={"start"}
       columnGap={vw(10)}
       layout
-    />
+    />,
   );
 
   const codeExample = createRef<Code>();
   const codeMarginTop = createSignal<number>(25);
   const codeMarginLeft = createSignal<number>(0);
 
-  const modifyMarginTop = (offset: number) => codeMarginTop(codeMarginTop() + offset); 
-  const modifyMarginLeft = (offset: number) => codeMarginLeft(codeMarginLeft() + offset);
+  const modifyMarginTop = (offset: number) =>
+    codeMarginTop(codeMarginTop() + offset);
+  const modifyMarginLeft = (offset: number) =>
+    codeMarginLeft(codeMarginLeft() + offset);
 
   codeLayout().add(
     <Code
@@ -122,15 +124,17 @@ export default makeScene2D(function* (view) {
       code={""}
       marginTop={() => vh(codeMarginTop())}
       marginLeft={() => vw(codeMarginLeft())}
-    />
+    />,
   );
 
   const annotationRef = createRef<Txt>();
   const annotationOffsetX = createSignal<number>(0);
   const annotationOffsetY = createSignal<number>(0.66);
 
-  const modifyAnnotationOffsetX = (offset: number) => annotationOffsetX(annotationOffsetX() + offset);
-  const modifyAnnotationOffsetY = (offset: number) => annotationOffsetY(annotationOffsetY() + offset);
+  const modifyAnnotationOffsetX = (offset: number) =>
+    annotationOffsetX(annotationOffsetX() + offset);
+  const modifyAnnotationOffsetY = (offset: number) =>
+    annotationOffsetY(annotationOffsetY() + offset);
 
   view.add(
     <Txt
@@ -146,7 +150,7 @@ export default makeScene2D(function* (view) {
 
         return new Vector2(x, y);
       }}
-    />
+    />,
   );
 
   // Because I'm too lazy to layout stuff properly
@@ -163,9 +167,7 @@ export default makeScene2D(function* (view) {
 
   yield* beginSlide("blanket_impl_beginning");
 
-  yield* chain(
-    title().fontSize(rem(3), 0.6, easeInOutBack),
-  );
+  yield* chain(title().fontSize(rem(3), 0.6, easeInOutBack));
 
   let exampleCode = CODE`\
 impl<T: Foo> SomeTrait for T {
@@ -197,7 +199,8 @@ impl<T: Bar> SomeTrait for T {
 
   yield* beginSlide("blanket_impls_source");
 
-  annotationText = 'What follows is adapted from:\n\nLiebow-Feeser, Joshua. "Safety in an Unsafe World."\nTalk, RustConf 2024';
+  annotationText =
+    'What follows is adapted from:\n\nLiebow-Feeser, Joshua. "Safety in an Unsafe World."\nTalk, RustConf 2024';
 
   yield* all(
     codeExample().code("", 1, easeInOutBack),
@@ -219,58 +222,32 @@ impl<T: Bar> SomeTrait for T {
 
   view.add(
     <Layout ref={graphLayoutRef}>
-      <Circle
-        ref={graphNodeRefs.one}
-        fill={"white"}
-        x={vw(-40)}
-        y={vh(-20)}
-      />
-      <Circle
-        ref={graphNodeRefs.two}
-        fill={"white"}
-        x={vw(-35)}
-        y={vh(25)}
-      />
+      <Circle ref={graphNodeRefs.one} fill={"white"} x={vw(-40)} y={vh(-20)} />
+      <Circle ref={graphNodeRefs.two} fill={"white"} x={vw(-35)} y={vh(25)} />
       <Circle
         ref={graphNodeRefs.three}
         fill={"white"}
         x={vw(-15)}
         y={vh(-15)}
       />
-      <Circle
-        ref={graphNodeRefs.four}
-        fill={"white"}
-        x={vw(10)}
-        y={vh(-22)}
-      />
-      <Circle
-        ref={graphNodeRefs.five}
-        fill={"white"}
-        x={vw(5)}
-        y={vh(5)}
-      />
-      <Circle
-        ref={graphNodeRefs.six}
-        fill={"white"}
-        x={vw(-2)}
-        y={vh(35)}
-      />
-      <Circle
-        ref={graphNodeRefs.seven}
-        fill={"white"}
-        x={vw(30)}
-        y={vh(0)}
-      />
-    </Layout>
+      <Circle ref={graphNodeRefs.four} fill={"white"} x={vw(10)} y={vh(-22)} />
+      <Circle ref={graphNodeRefs.five} fill={"white"} x={vw(5)} y={vh(5)} />
+      <Circle ref={graphNodeRefs.six} fill={"white"} x={vw(-2)} y={vh(35)} />
+      <Circle ref={graphNodeRefs.seven} fill={"white"} x={vw(30)} y={vh(0)} />
+    </Layout>,
   );
 
-  [...graphNodeRefs.mapRefs(ref => {
-    graphLayoutRef().add(<Circle
-      fill={DEFAULT_COLOR_BACKGROUND}
-      position={() => ref.position()}
-      size={() => ref.size().mul(0.8)}
-    />);
-  })];
+  [
+    ...graphNodeRefs.mapRefs((ref) => {
+      graphLayoutRef().add(
+        <Circle
+          fill={DEFAULT_COLOR_BACKGROUND}
+          position={() => ref.position()}
+          size={() => ref.size().mul(0.8)}
+        />,
+      );
+    }),
+  ];
 
   const graphLineRefs = createRefMap<Line>();
 
@@ -340,40 +317,38 @@ impl<T: Bar> SomeTrait for T {
         ]}
         endOffset={() => graphNodeRefs.seven().height() * 0.5}
       />
-    </>
+    </>,
   );
 
-  [...graphLineRefs.mapRefs((ref, _index) => {
-    ref.stroke("white");
-    ref.zIndex(-100);
-    ref.lineWidth(rem(0.5));
-    ref.arrowSize(rem(1.1));
-    ref.endArrow(true);
-    ref.end(0);
-  })];
+  [
+    ...graphLineRefs.mapRefs((ref, _index) => {
+      ref.stroke("white");
+      ref.zIndex(-100);
+      ref.lineWidth(rem(0.5));
+      ref.arrowSize(rem(1.1));
+      ref.endArrow(true);
+      ref.end(0);
+    }),
+  ];
 
   yield* all(
-    ...graphNodeRefs.mapRefs((ref, index) => chain(
-      waitFor(index * 0.1),
-      ref.size(rem(5), 0.5, easeInOutQuart),
-    )),
-    ...graphLineRefs.mapRefs((ref, index) => chain(
-      waitFor(index * 0.1),
-      ref.end(1, 1, easeInOutQuart),
-    )),
+    ...graphNodeRefs.mapRefs((ref, index) =>
+      chain(waitFor(index * 0.1), ref.size(rem(5), 0.5, easeInOutQuart)),
+    ),
+    ...graphLineRefs.mapRefs((ref, index) =>
+      chain(waitFor(index * 0.1), ref.end(1, 1, easeInOutQuart)),
+    ),
   );
 
   yield* beginSlide("dag_code_traits");
 
   yield* all(
-    ...graphLineRefs.mapRefs((ref, index) => chain(
-      waitFor(index * 0.1),
-      ref.end(0, 1, easeInOutQuart),
-    )),
-    ...graphNodeRefs.mapRefs((ref, index) => chain(
-      waitFor(index * 0.1),
-      ref.size(0, 0.5, easeInOutQuart),
-    )),
+    ...graphLineRefs.mapRefs((ref, index) =>
+      chain(waitFor(index * 0.1), ref.end(0, 1, easeInOutQuart)),
+    ),
+    ...graphNodeRefs.mapRefs((ref, index) =>
+      chain(waitFor(index * 0.1), ref.size(0, 0.5, easeInOutQuart)),
+    ),
   );
 
   exampleCode = CODE`\
@@ -502,7 +477,6 @@ impl_lock_after!(FirstLock => SecondLock);`;
 
   yield* codeExample().code(exampleCode, 1, easeInOutBack);
 
-
   yield* beginSlide("mutex_definition");
 
   exampleCode = CODE`\
@@ -557,8 +531,9 @@ impl<Id, T> Mutex<Id, T> {
       ...codeExample().findAllRanges(/L/g).slice(0, 1),
       ...codeExample().findAllRanges(/L/g).slice(2, 3),
       codeExample().findFirstRange(/L:.*<Id>/g),
-    ]
-    , 0.6, easeInOutQuad
+    ],
+    0.6,
+    easeInOutQuad,
   );
 
   yield* beginSlide("mutex_fn_lock_return_current_id");
@@ -567,7 +542,9 @@ impl<Id, T> Mutex<Id, T> {
     [
       ...codeExample().findAllRanges(/Id/g).slice(0, 2),
       codeExample().findLastRange(/LockCtx<Id>/g),
-    ], 0.6, easeInOutQuad
+    ],
+    0.6,
+    easeInOutQuad,
   );
 
   yield* beginSlide("starting_node");
@@ -601,7 +578,9 @@ impl_lock_after!(Foo => Bar);`;
   yield* beginSlide("scenario_highlight_macros");
 
   yield* codeExample().selection(
-    codeExample().findAllRanges(/impl_lock_after.*/g), 0.6, easeInOutQuad
+    codeExample().findAllRanges(/impl_lock_after.*/g),
+    0.6,
+    easeInOutQuad,
   );
 
   yield* beginSlide("scenario_thread_a_ctx");
@@ -701,7 +680,9 @@ let (foo, mut ctx) = FOO.lock(&mut ctx);`;
   modifyAnnotationOffsetY(50);
 
   yield* codeExample().selection(
-      codeExample().findLastRange(/let .foo,.*/g), 0.6, easeInOutQuad
+    codeExample().findLastRange(/let .foo,.*/g),
+    0.6,
+    easeInOutQuad,
   );
   yield* annotationRef().text(annotationText, 0.6, easeInOutQuad);
 
@@ -733,7 +714,7 @@ lock_ordering`;
   yield* beginSlide("next_scene");
 
   // also remove code stuff here if necessary
-  
+
   yield* all(
     ...[...textFieldRefs.mapRefs((ref) => ref)]
       .reverse()

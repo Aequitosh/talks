@@ -94,9 +94,7 @@ export default makeScene2D(function* (view) {
 
   yield* typewriterTransition(title().text, nextTitle, 2);
 
-  yield* chain(
-    title().fontSize(rem(3), 0.6, easeInOutBack),
-  );
+  yield* chain(title().fontSize(rem(3), 0.6, easeInOutBack));
 
   // TODO: qr code to permalink markdown on GitHub here
 

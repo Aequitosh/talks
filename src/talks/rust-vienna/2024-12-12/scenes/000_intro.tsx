@@ -63,7 +63,13 @@ export default makeScene2D(function* (view) {
 
   titleLayout().add(
     <>
-      <Rect direction={"column"} width={"100%"} rowGap={"20%"} textWrap={false} layout>
+      <Rect
+        direction={"column"}
+        width={"100%"}
+        rowGap={"20%"}
+        textWrap={false}
+        layout
+      >
         <Txt ref={title} fontSize={rem(5)} width={"100%"} fill={"white"} />
         <Txt ref={subtitle} fontSize={rem(3)} width={"100%"} fill={"white"} />
         <Txt ref={subtitle2} fontSize={rem(3)} width={"100%"} fill={"white"} />

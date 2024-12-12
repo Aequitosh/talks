@@ -106,15 +106,17 @@ export default makeScene2D(function* (view) {
       alignItems={"start"}
       columnGap={vw(10)}
       layout
-    />
+    />,
   );
 
   const codeExample = createRef<Code>();
   const codeMarginTop = createSignal<number>(25);
   const codeMarginLeft = createSignal<number>(0);
 
-  const modifyMarginTop = (offset: number) => codeMarginTop(codeMarginTop() + offset); 
-  const modifyMarginLeft = (offset: number) => codeMarginLeft(codeMarginLeft() + offset);
+  const modifyMarginTop = (offset: number) =>
+    codeMarginTop(codeMarginTop() + offset);
+  const modifyMarginLeft = (offset: number) =>
+    codeMarginLeft(codeMarginLeft() + offset);
 
   codeLayout().add(
     <Code
@@ -122,15 +124,17 @@ export default makeScene2D(function* (view) {
       code={""}
       marginTop={() => vh(codeMarginTop())}
       marginLeft={() => vw(codeMarginLeft())}
-    />
+    />,
   );
 
   const annotationRef = createRef<Txt>();
   const annotationOffsetX = createSignal<number>(0);
   const annotationOffsetY = createSignal<number>(0.66);
 
-  const modifyAnnotationOffsetX = (offset: number) => annotationOffsetX(annotationOffsetX() + offset);
-  const modifyAnnotationOffsetY = (offset: number) => annotationOffsetY(annotationOffsetY() + offset);
+  const modifyAnnotationOffsetX = (offset: number) =>
+    annotationOffsetX(annotationOffsetX() + offset);
+  const modifyAnnotationOffsetY = (offset: number) =>
+    annotationOffsetY(annotationOffsetY() + offset);
 
   view.add(
     <Txt
@@ -146,7 +150,7 @@ export default makeScene2D(function* (view) {
 
         return new Vector2(x, y);
       }}
-    />
+    />,
   );
 
   let refsWithoutTitle = [
@@ -154,7 +158,7 @@ export default makeScene2D(function* (view) {
     textFieldRefs.b,
     textFieldRefs.c,
     textFieldRefs.d,
-    textFieldRefs.e
+    textFieldRefs.e,
   ];
 
   const erase = function* (
@@ -172,7 +176,12 @@ export default makeScene2D(function* (view) {
     }
 
     yield* chain(
-      typewriterTransition(txtRef().text, finalText, totalDuration, timingFunction),
+      typewriterTransition(
+        txtRef().text,
+        finalText,
+        totalDuration,
+        timingFunction,
+      ),
     );
   };
 
@@ -188,7 +197,7 @@ export default makeScene2D(function* (view) {
     nextSubtitleB,
     nextSubtitleC,
     nextSubtitleD,
-    nextSubtitleE
+    nextSubtitleE,
   ] = ["", "", "", "", ""];
 
   const title = textFieldRefs.title;
@@ -205,9 +214,7 @@ export default makeScene2D(function* (view) {
 
   title().textWrap(true);
 
-  yield* chain(
-    title().text(nextTitle, 0.6, easeInOutQuad),
-  );
+  yield* chain(title().text(nextTitle, 0.6, easeInOutQuad));
 
   let exampleCode = CODE`\
 pub fn transmute<Src, Dst>(src: Src) -> Dst;`;
@@ -228,7 +235,8 @@ pub fn transmute<Src, Dst>(src: Src) -> Dst;`;
 
   yield* annotationRef().text(annotationText, 0.25, easeInOutQuad);
 
-  annotationText = '"Both types must have the same size.\nCompilation will fail if this is not guaranteed."';
+  annotationText =
+    '"Both types must have the same size.\nCompilation will fail if this is not guaranteed."';
 
   yield* annotationRef().text(annotationText, 0.6, easeInOutQuad);
 
@@ -380,7 +388,7 @@ static_assertions`;
   yield* beginSlide("next_scene");
 
   // also remove code stuff here if necessary
-  
+
   yield* all(
     ...[...textFieldRefs.mapRefs((ref) => ref)]
       .reverse()
