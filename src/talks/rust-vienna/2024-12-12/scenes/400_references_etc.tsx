@@ -38,14 +38,7 @@ import {
   relTypewriterTransition,
 } from "./defaults";
 
-import { monokaiDarkStyle } from "@uiw/codemirror-theme-monokai";
-
-import { HighlightStyle } from "@codemirror/language";
-import { parser } from "@lezer/rust";
-
-const codeStyle = HighlightStyle.define(monokaiDarkStyle);
-
-Code.defaultHighlighter = new LezerHighlighter(parser, codeStyle);
+import referencesQRCode from "../assets/references_qr_code.png";
 
 export default makeScene2D(function* (view) {
   const [vw, vh, vmin, vmax] = make_viewport_unit_functions(view);
@@ -82,6 +75,28 @@ export default makeScene2D(function* (view) {
     </>,
   );
 
+  const qr = createRef<Img>();
+
+  view.add(
+    <Layout
+      ref={qr}
+      direction={"row"}
+      justifyContent={"center"}
+      alignItems={"center"}
+      opacity={0}
+      layout
+    >
+      <Layout
+        direction={"column"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        layout
+      >
+        <Img src={referencesQRCode} size={vh(50)} />
+      </Layout>
+    </Layout>,
+  );
+
   // Because I'm too lazy to layout stuff properly
   for (const ref of textFieldRefs.mapRefs((ref) => ref)) {
     ref.text(NOBREAK_SPACE);
@@ -94,13 +109,19 @@ export default makeScene2D(function* (view) {
 
   yield* typewriterTransition(title().text, nextTitle, 2);
 
-  yield* chain(title().fontSize(rem(3), 0.6, easeInOutBack));
+  yield* chain(
+    title().fontSize(rem(3), 0.6, easeInOutBack),
+    title().text("References", 0.6, easeInOutQuad),
+  );
 
-  // TODO: qr code to permalink markdown on GitHub here
+  title().textWrap(true);
+
+  yield* all(title().text(nextTitle, 0.6, easeInOutQuad), qr().opacity(1, 1));
 
   yield* beginSlide("next_slide");
 
   yield* all(
+    qr().opacity(0, 1),
     ...[...textFieldRefs.mapRefs((ref) => ref)]
       .reverse()
       .map((ref, i) =>
