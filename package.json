@@ -16,6 +16,7 @@
     "@motion-canvas/ffmpeg": "^1.1.0",
     "@uiw/codemirror-theme-gruvbox-dark": "^4.23.6",
     "@uiw/codemirror-theme-monokai": "^4.23.6",
+    "@uiw/codemirror-themes-all": "^4.23.12",
     "code-fns": "^0.11.0"
   },
   "devDependencies": {
