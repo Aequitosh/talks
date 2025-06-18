@@ -8,8 +8,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.26.0",
-    "@lezer/cpp": "^1.1.2",
-    "@lezer/python": "^1.1.13",
+    "@lezer/cpp": "^1.1.3",
+    "@lezer/java": "^1.1.3",
+    "@lezer/markdown": "^1.4.3",
+    "@lezer/python": "^1.1.18",
     "@lezer/rust": "^1.0.2",
     "@motion-canvas/2d": "^3.11.0",
     "@motion-canvas/core": "^3.11.0",
