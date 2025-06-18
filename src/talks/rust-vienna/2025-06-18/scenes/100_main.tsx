@@ -44,7 +44,7 @@ import {
   typewriterTransition,
 } from "./defaults";
 
-export default makeScene2D(function* (view) {
+export default makeScene2D(function*(view) {
   const [vw, vh, vmin, vmax] = make_viewport_unit_functions(view);
 
   view.fill(DEFAULT_COLOR_BACKGROUND);
@@ -530,72 +530,350 @@ int fibonacci(int n) => n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2);`;
 
   codeLayout().insert(
     <Rect ref={codeRectDesc} padding={5} grow={1} shrink={1} basis={0}>
-      <Code ref={codeExampleDesc} code={""} highlighter={rustHighlighter} />
+      <Code ref={codeExampleDesc} code={""} highlighter={markdownHighlighter} />
     </Rect>,
     0,
   );
 
-  // TODO:
-  // codeExampleTop().code("Dart");
-  // codeExampleBottom().code("Rust");
-  // codeExampleDesc().code("Feature");
-  //
-  // codeRectDesc().margin(codeRectTop().margin());
-  // codeExampleDesc().fontSize(codeExampleTop().fontSize());
+  codeRectDesc().margin(codeRectTop().margin());
+  codeExampleDesc().fontSize(codeExampleTop().fontSize());
+
+  const columnRefs = [
+    codeRectDesc(),
+    codeRectTop(),
+    codeRectBottom(),
+  ];
+
+  const columnCodeRefs = [
+    codeExampleDesc(),
+    codeExampleTop(),
+    codeExampleBottom(),
+  ];
+
+  columnCodeRefs.map(ref => ref.fontSize(rem(1.5)));
+  columnCodeRefs.map(ref => ref.lineHeight(rem(3)));
+
+
+  yield* chain(
+    codeExampleDesc().code("Feature", 0.33, easeInOutBack),
+    codeExampleTop().code("Rust", 0.33, easeInOutBack),
+    codeExampleBottom().code("Dart", 0.33, easeInOutBack),
+  );
+
+  yield* chain(
+    ...[
+      codeExampleDesc(),
+      codeExampleTop(),
+      codeExampleBottom(),
+    ].map((ref) =>
+      ref.code.append("\n- - - - - - -", 0.33)
+    )
+  );
+
+  const featureTriples = [
+    ["Memory Model", "ownership / borrowing", "garbage collection"],
+    ["Mutability", "immutable by default", "mutable by default"],
+    ["Inheritance", "no", "yes"],
+    ["Generics", "monomorphized", "reified"],
+    ["Pattern Matching", "using match", "using switch"],
+    ["FFI", "extern \"C\" + unsafe", "dart:ffi"],
+    ["Null Safety", "Option<T>", "sound null safety (T?)"],
+  ];
+
+  yield* chain(
+    ...featureTriples.map((triple) => {
+      const [feat, rust, dart] = triple;
+      return chain(
+        codeExampleDesc().code.append(`\n${feat}`, 0.33),
+        codeExampleTop().code.append(`\n${rust}`, 0.33),
+        codeExampleBottom().code.append(`\n${dart}`, 0.33),
+      );
+    }),
+  );
 
   yield* beginSlide("null_safety");
 
-  // TODO:
-  // codeRectDesc().remove();
 
   txtContents = "Null Safety";
 
-  yield* all(typewriterTransition(txtRef().text, txtContents, 2));
+  yield* all(
+    typewriterTransition(txtRef().text, txtContents, 2),
+    chain(
+      codeExampleDesc().code(" ", 0.6, easeInOutBack),
+      codeExampleTop().code(" ", 0.6, easeInOutBack),
+      codeExampleBottom().code(" ", 0.6, easeInOutBack),
+    ),
+  );
+
+  codeRectDesc().remove();
 
   yield* beginSlide("null_safety_rust");
-
-  txtContents = "Null Safety in Rust";
-
-  yield* all(typewriterTransition(txtRef().text, txtContents, 2));
 
   // top is still left here, and bottom is right
   codeExampleTop().highlighter(rustHighlighter);
   codeExampleBottom().highlighter(dartHighlighter);
 
+  codeExampleTop().lineHeight(DEFAULT);
+  codeExampleBottom().lineHeight(DEFAULT);
+
   codeExampleTop().fontSize(rem(1.5));
   codeExampleBottom().fontSize(rem(1.5));
 
+  exampleCodeTop = CODE`\
+let answer = Some(42);
+
+match answer {
+  Some(n) => println!("{n}"),
+  None => println!("None :("),
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 0.6, easeInOutBack);
+
   yield* beginSlide("null_safety_dart");
 
-  txtContents = "Null Safety in Dart";
+  exampleCodeBottom = CODE`\
+int? answer = null;
 
-  yield* all(typewriterTransition(txtRef().text, txtContents, 2));
+print(answer?.isEven);`;
 
-  yield* beginSlide("null_safety_importance");
+  yield* codeExampleBottom().code(exampleCodeBottom, 0.6, easeInOutBack);
 
-  txtContents = "Importance of Null Safety";
+  yield* beginSlide("null_safety_option_type");
 
-  yield* all(typewriterTransition(txtRef().text, txtContents, 2));
+  exampleCodeTop = CODE`\
+let answer = Some(42);
 
-  yield* beginSlide("null_safety_history");
+match answer {
+  Some(n) => println!("{n}"),
+  None => println!("None :("),
+}
 
-  txtContents = "Null Safety: Some History";
 
-  yield* all(typewriterTransition(txtRef().text, txtContents, 2));
 
-  yield* beginSlide("algebraic_data_types_rust_option");
+pub enum Option<T> {
+    None,
+    Some(T),
+}`;
 
-  txtContents = "Algebraic Data Types";
-
-  yield* all(typewriterTransition(txtRef().text, txtContents, 2));
+  yield* codeExampleTop().code(exampleCodeTop, 0.6, easeInOutBack);
 
   yield* beginSlide("algebraic_data_types_rust_example");
 
+  txtContents = "Algebraic Data Types";
+
+  yield* all(
+    typewriterTransition(txtRef().text, txtContents, 2),
+    chain(
+      codeExampleBottom().code(" ", 0.6, easeInOutBack),
+      codeExampleTop().code(" ", 0.6, easeInOutBack),
+    ),
+  );
+
+  exampleCodeTop = CODE`\
+struct Point {
+}
+
+impl Point {
+    fn new(x: f64, y: f64) -> Self {
+    }
+
+    fn distance(&self) -> f64 {
+    }
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+impl Point {
+    fn new(x: f64, y: f64) -> Self {
+        Point { x, y }
+    }
+
+    fn distance(&self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+}
+
+let p = Point::new(3.0, 4.0);
+println!("Distance: {}", p.distance());`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
   yield* beginSlide("algebraic_data_types_dart_example");
+
+  yield* codeExampleTop().code(" ", 1, easeInOutBack);
+
+  codeExampleTop().highlighter(dartHighlighter);
+
+  exampleCodeTop = CODE`\
+sealed class Shape {}
+
+class Square implements Shape {
+}
+
+class Circle implements Shape {
+}
+
+double calculateArea(Shape shape) => switch (shape) {
+};`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+sealed class Shape {}              // Shamelessly stolen from the docs :^)
+
+class Square implements Shape {
+  final double length;
+  Square(this.length);
+}
+
+class Circle implements Shape {
+  final double radius;
+  Circle(this.radius);
+}
+
+double calculateArea(Shape shape) => switch (shape) {
+  Square(length: var l) => l * l,
+  Circle(radius: var r) => math.pi * r * r,
+};`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
 
   yield* beginSlide("algebraic_data_types_rust_result");
 
+  yield* codeExampleTop().code(" ", 1, easeInOutBack);
+
+  codeExampleTop().highlighter(rustHighlighter);
+
+  exampleCodeTop = CODE`\
+pub enum Result<T, E> {
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+pub enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+pub enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+
+let line = "1\\n2\\n3\\n4\\n";`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+pub enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+
+let line = "1\\n2\\n3\\n4\\n";
+
+for num in line.lines() {
+    match num.parse::<i32>() {
+        Ok(n) => println!("{n}"),
+        Err(..) => {}
+    }
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
   yield* beginSlide("algebraic_data_types_dart_result");
+
+  yield* codeExampleTop().code(" ", 1, easeInOutBack);
+
+  codeExampleTop().highlighter(dartHighlighter);
+
+  exampleCodeTop = CODE`\
+sealed class Result<T, E extends Exception> {
+  // ...
+}
+
+final class Ok<T, E extends Exception> extends Result<T, E> {
+  final T value;
+
+  Ok(this.value);
+}
+
+final class Err<T, E extends Exception> extends Result<T, E> {
+  final E value;
+
+  Err(this.value);
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  yield* beginSlide("algebraic_data_types_dart_result_2");
+
+  exampleCodeTop = CODE`\
+sealed class Result<T, E extends Exception> {
+  // ...
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+sealed class Result<T, E extends Exception> {
+  bool isOk() => this is Ok<T, E>;
+
+  bool isErr() => this is Err<T, E>;
+
+  // ...
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+sealed class Result<T, E extends Exception> {
+  bool isOk() => this is Ok<T, E>;
+
+  bool isErr() => this is Err<T, E>;
+
+  Ok<T, E>? ok() => this.isOk() ? this as Ok<T, E> : null;
+
+  Err<T, E>? err() => this.isErr() ? this as Err<T, E> : null;
+
+  // ...
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
+
+  exampleCodeTop = CODE`\
+sealed class Result<T, E extends Exception> {
+  bool isOk() => this is Ok<T, E>;
+
+  bool isErr() => this is Err<T, E>;
+
+  Ok<T, E>? ok() => this.isOk() ? this as Ok<T, E> : null;
+
+  Err<T, E>? err() => this.isErr() ? this as Err<T, E> : null;
+
+  T unwrap() {
+    switch (this) {
+      case Ok<T, E>(value: var v):
+        return v;
+      case Err<T, E>(value: var v):
+        throw v;
+    }
+  }
+}`;
+
+  yield* codeExampleTop().code(exampleCodeTop, 1, easeInOutBack);
 
   yield* beginSlide("end_slide");
 
